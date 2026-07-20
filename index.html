@@ -5,137 +5,119 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CAMERA — The Listening Field</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Instrument+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --pine:#14282a;      /* deep teal-slate ground */
-    --sea:#3e6b66;       /* faded sea */
-    --apricot:#e0975c;   /* sun-bleached accent */
-    --bone:#f0e9da;      /* warm off-white text */
-    --haze:#8fa6a0;      /* utility haze */
-    --ink:#0c1a1c;       /* deepest layer */
+    --pine:#14282a; --ink:#0c1a1c; --sea:#3e6b66; --bone:#f0e9da; --haze:#8fa6a0; --apricot:#e0975c;
+    /* strata */
+    --c-machine:#78c8bc; --c-boombap:#e0975c; --c-roots:#d4b45a; --c-groove:#c77f9e; --c-songbook:#f0e9da; --c-blue:#7d9cc9;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{
-    background:var(--pine);
-    color:var(--bone);
-    font-family:'Instrument Sans',sans-serif;
-    line-height:1.6;
-    overflow-x:hidden;
-  }
-  /* film grain */
-  body::after{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.07;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+  body{background:var(--pine);color:var(--bone);font-family:'Instrument Sans',sans-serif;line-height:1.6;overflow-x:hidden}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:90;opacity:.06;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");}
   a{color:var(--apricot);text-decoration:none}
   a:hover{text-decoration:underline}
   a:focus-visible,button:focus-visible{outline:2px solid var(--apricot);outline-offset:3px}
 
-  /* ---------- header ---------- */
-  header{
-    position:fixed;top:0;left:0;right:0;z-index:40;
-    display:flex;justify-content:space-between;align-items:center;
-    padding:1.1rem 1.5rem;mix-blend-mode:normal;
-  }
-  .wordmark{font-family:'Syne',sans-serif;font-weight:800;letter-spacing:.28em;font-size:.95rem;color:var(--bone)}
-  nav{display:flex;gap:1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+  header{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.5rem;background:linear-gradient(to bottom,rgba(12,26,28,.85),transparent)}
+  .wordmark{font-family:'Syne',sans-serif;font-weight:800;letter-spacing:.28em;font-size:.95rem}
+  nav{display:flex;gap:1.3rem;font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;flex-wrap:wrap}
   nav a{color:var(--haze)}
   nav a:hover{color:var(--apricot);text-decoration:none}
 
-  /* ---------- hero / field ---------- */
-  #field-section{position:relative;height:100vh;min-height:620px}
-  #field{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
-  .hero-copy{
-    position:absolute;left:1.5rem;bottom:2.2rem;z-index:5;max-width:34rem;pointer-events:none;
-  }
-  .eyebrow{
-    font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.22em;
-    text-transform:uppercase;color:var(--apricot);margin-bottom:.8rem;
-  }
-  h1{
-    font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(2.1rem,5.4vw,4rem);
-    line-height:1.05;letter-spacing:-.01em;
-  }
-  .hero-sub{color:var(--haze);margin-top:1rem;max-width:26rem;font-size:.95rem}
-  .field-hint{
-    position:absolute;right:1.5rem;bottom:2.2rem;z-index:5;
-    font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--haze);
-    letter-spacing:.1em;text-transform:uppercase;text-align:right;
-  }
-
-  /* ---------- dossier panel ---------- */
-  #dossier{
-    position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);z-index:60;
-    background:var(--ink);border-left:1px solid rgba(240,233,218,.12);
-    transform:translateX(102%);transition:transform .45s cubic-bezier(.2,.8,.2,1);
-    padding:2rem 1.8rem;overflow-y:auto;
-  }
-  #dossier.open{transform:translateX(0)}
-  #dossier .close{
-    background:none;border:1px solid rgba(240,233,218,.25);color:var(--bone);
-    font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;
-    padding:.45rem .9rem;cursor:pointer;text-transform:uppercase;margin-bottom:1.6rem;
-  }
-  #dossier .close:hover{border-color:var(--apricot);color:var(--apricot)}
-  #dossier img{width:100%;aspect-ratio:1;object-fit:cover;filter:saturate(.8) contrast(1.05);margin-bottom:1.2rem}
-  #dossier h2{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:700;margin-bottom:.4rem}
-  #dossier .role{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--apricot);letter-spacing:.18em;text-transform:uppercase;margin-bottom:1rem}
-  #dossier p{color:var(--haze);font-size:.92rem;margin-bottom:1.4rem}
-  .dossier-tracks{border-top:1px solid rgba(240,233,218,.12);padding-top:1rem;margin-bottom:1.4rem}
-  .dossier-tracks div{font-family:'IBM Plex Mono',monospace;font-size:.78rem;padding:.4rem 0;color:var(--bone)}
-  .spot-btn{
-    display:inline-block;background:var(--apricot);color:var(--ink);font-weight:600;
-    font-size:.85rem;padding:.65rem 1.2rem;border-radius:999px;
-  }
-  .spot-btn:hover{text-decoration:none;filter:brightness(1.08)}
+  /* ---------- galaxy ---------- */
+  #galaxy-section{position:relative;height:100vh;min-height:680px}
+  #galaxy{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .hero-copy{position:absolute;left:1.5rem;top:5.5rem;z-index:5;max-width:30rem;pointer-events:none}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--apricot);margin-bottom:.7rem}
+  h1{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(2rem,5vw,3.6rem);line-height:1.05}
+  .hero-sub{color:var(--haze);margin-top:.8rem;font-size:.92rem;max-width:24rem}
+  .chips{position:absolute;left:1.5rem;bottom:1.8rem;z-index:6;display:flex;gap:.5rem;flex-wrap:wrap;max-width:calc(100% - 3rem)}
+  .chip{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+    padding:.42rem .8rem;border-radius:999px;border:1px solid rgba(240,233,218,.25);background:rgba(12,26,28,.55);
+    color:var(--bone);cursor:pointer;display:flex;align-items:center;gap:.45rem}
+  .chip .dot{width:8px;height:8px;border-radius:50%}
+  .chip.off{opacity:.35}
+  .chip:hover{border-color:var(--apricot)}
+  #tooltip{position:fixed;z-index:80;pointer-events:none;display:none;background:var(--ink);border:1px solid rgba(240,233,218,.2);
+    padding:.6rem;width:200px}
+  #tooltip img{width:100%;aspect-ratio:1;object-fit:cover;margin-bottom:.5rem;filter:saturate(.85)}
+  #tooltip .tt-rank{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--apricot);letter-spacing:.15em}
+  #tooltip .tt-title{font-weight:600;font-size:.85rem;line-height:1.3}
+  #tooltip .tt-artist{color:var(--haze);font-size:.76rem}
 
   /* ---------- sections ---------- */
-  section{padding:6rem 1.5rem;max-width:960px;margin:0 auto}
-  .sec-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:2.4rem}
-  .sec-head h2{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(1.6rem,3.4vw,2.4rem)}
-  .sec-head .tag{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--apricot);letter-spacing:.2em;text-transform:uppercase}
+  section{padding:5.5rem 1.5rem;max-width:1020px;margin:0 auto}
+  .sec-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:.8rem;flex-wrap:wrap}
+  .sec-head h2{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(1.6rem,3.4vw,2.3rem)}
+  .sec-head .tag{font-family:'IBM Plex Mono',monospace;font-size:.66rem;color:var(--apricot);letter-spacing:.2em;text-transform:uppercase}
+  .sec-intro{color:var(--haze);font-size:.92rem;max-width:38rem;margin-bottom:2.4rem}
 
-  /* rotation (tracks) */
-  .track{
-    display:grid;grid-template-columns:64px 1fr auto;gap:1.1rem;align-items:center;
-    padding:1rem 0;border-top:1px solid rgba(240,233,218,.12);
-  }
-  .track:last-of-type{border-bottom:1px solid rgba(240,233,218,.12)}
-  .track img{width:64px;height:64px;object-fit:cover;filter:saturate(.85)}
-  .track .t-title{font-weight:500}
-  .track .t-artist{color:var(--haze);font-size:.86rem}
-  .track .t-meta{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--haze);text-align:right}
-  .track .t-meta a{display:block;margin-top:.25rem}
+  /* podium */
+  .podium{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:2.6rem}
+  .pod{position:relative;border:1px solid rgba(240,233,218,.12);background:rgba(12,26,28,.5)}
+  .pod img{width:100%;aspect-ratio:1;object-fit:cover;filter:saturate(.85);display:block}
+  .pod .p-body{padding:.7rem .75rem .9rem}
+  .pod .p-rank{position:absolute;top:.5rem;left:.5rem;font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;
+    color:var(--bone);text-shadow:0 2px 10px rgba(0,0,0,.7);line-height:1}
+  .pod .p-title{font-weight:600;font-size:.84rem;line-height:1.25}
+  .pod .p-artist{color:var(--haze);font-size:.74rem;margin-top:.15rem}
+  .pod a{display:block;color:inherit}
+  .pod a:hover{text-decoration:none}
+  .pod:hover{border-color:var(--apricot)}
 
-  /* group chat archive */
-  #groupchat .archive-shell{
-    border:1px dashed rgba(224,151,92,.5);padding:2.2rem;text-align:left;
-  }
-  #groupchat .mono{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--haze)}
-  .bubble-demo{margin:1.4rem 0;display:flex;flex-direction:column;gap:.5rem;max-width:26rem}
-  .bubble{
-    background:rgba(62,107,102,.35);border:1px solid rgba(143,166,160,.25);
-    padding:.55rem .85rem;border-radius:2px 12px 12px 12px;font-size:.85rem;color:var(--bone);opacity:.75;
-  }
-  .bubble b{color:var(--apricot);font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:.68rem;display:block;letter-spacing:.08em}
+  /* chart rows */
+  .row{display:grid;grid-template-columns:2.4rem 46px 1fr auto;gap:.9rem;align-items:center;padding:.6rem 0;border-top:1px solid rgba(240,233,218,.1)}
+  .row:last-of-type{border-bottom:1px solid rgba(240,233,218,.1)}
+  .row .r-rank{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--haze)}
+  .row img{width:46px;height:46px;object-fit:cover;filter:saturate(.85)}
+  .row .r-title{font-weight:500;font-size:.92rem;line-height:1.3}
+  .row .r-artist{color:var(--haze);font-size:.8rem}
+  .row .r-meta{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--haze);display:flex;gap:.8rem;align-items:center}
+  .stratum-pill{display:inline-block;width:9px;height:9px;border-radius:50%}
 
-  footer{
-    padding:3rem 1.5rem;border-top:1px solid rgba(240,233,218,.12);
-    font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--haze);
-    display:flex;justify-content:space-between;letter-spacing:.1em;text-transform:uppercase;
-  }
+  /* stats */
+  .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem}
+  .stat-block h3{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--apricot);margin-bottom:1.2rem}
+  .bar-row{display:grid;grid-template-columns:3.4rem 1fr 2rem;gap:.7rem;align-items:center;margin-bottom:.55rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--haze)}
+  .bar{height:14px;background:linear-gradient(90deg,var(--sea),var(--c-machine));min-width:2px}
+  .lb-row{display:flex;justify-content:space-between;padding:.5rem 0;border-top:1px solid rgba(240,233,218,.1);font-size:.88rem}
+  .lb-row .n{font-family:'IBM Plex Mono',monospace;color:var(--apricot);font-size:.78rem}
 
-  @media (max-width:640px){
-    .field-hint{display:none}
-    .hero-copy{left:1.1rem;right:1.1rem;bottom:1.6rem}
+  /* vault */
+  #vault .vault-card{display:grid;grid-template-columns:180px 1fr;gap:1.8rem;border:1px solid rgba(240,233,218,.12);background:rgba(12,26,28,.5);padding:1.6rem;margin-bottom:1.6rem}
+  #vault .vault-card img{width:180px;height:180px;object-fit:cover;filter:saturate(.85)}
+  #vault h3{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:.3rem}
+  #vault .mono{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--haze);letter-spacing:.08em}
+  #vault .big-num{font-family:'Syne',sans-serif;font-weight:800;font-size:2.6rem;color:var(--apricot);line-height:1;margin:.5rem 0 .4rem}
+  .marquee{overflow:hidden;border-top:1px solid rgba(240,233,218,.12);border-bottom:1px solid rgba(240,233,218,.12);padding:.7rem 0}
+  .marquee-track{display:flex;gap:2.4rem;white-space:nowrap;animation:mq 40s linear infinite;font-family:'IBM Plex Mono',monospace;font-size:.74rem}
+  .marquee-track a{color:var(--haze)}
+  .marquee-track a:hover{color:var(--apricot)}
+  @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* group chat */
+  #groupchat .archive-shell{border:1px dashed rgba(224,151,92,.5);padding:2rem}
+  #groupchat .mono{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--haze)}
+  .bubble-demo{margin:1.3rem 0;display:flex;flex-direction:column;gap:.5rem;max-width:26rem}
+  .bubble{background:rgba(62,107,102,.35);border:1px solid rgba(143,166,160,.25);padding:.55rem .85rem;border-radius:2px 12px 12px 12px;font-size:.84rem;opacity:.75}
+  .bubble b{color:var(--apricot);font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:.66rem;display:block;letter-spacing:.08em}
+
+  footer{padding:3rem 1.5rem;border-top:1px solid rgba(240,233,218,.12);font-family:'IBM Plex Mono',monospace;font-size:.66rem;color:var(--haze);display:flex;justify-content:space-between;letter-spacing:.1em;text-transform:uppercase;flex-wrap:wrap;gap:.6rem}
+
+  @media (max-width:760px){
+    .podium{grid-template-columns:repeat(2,1fr)}
+    .stats-grid{grid-template-columns:1fr}
+    #vault .vault-card{grid-template-columns:1fr}
+    #vault .vault-card img{width:120px;height:120px}
     section{padding:4rem 1.1rem}
-    .track{grid-template-columns:48px 1fr auto}
-    .track img{width:48px;height:48px}
+    .hero-copy{left:1.1rem;right:1.1rem}
+    .chips{left:1.1rem}
   }
   @media (prefers-reduced-motion:reduce){
-    #dossier{transition:none}
+    .marquee-track{animation:none}
   }
 </style>
 </head>
@@ -144,63 +126,210 @@
 <header>
   <div class="wordmark">CAMERA</div>
   <nav>
-    <a href="#field-section">Field</a>
-    <a href="#rotation">Rotation</a>
+    <a href="#galaxy-section">Galaxy</a>
+    <a href="#chart">All-Time 30</a>
+    <a href="#strata">Strata</a>
+    <a href="#vault">The Vault</a>
     <a href="#groupchat">The Group</a>
   </nav>
 </header>
 
-<!-- ============ THE LISTENING FIELD ============ -->
-<div id="field-section">
-  <canvas id="field" aria-label="Interactive map of favourite artists. Each point is an artist; select one to open details."></canvas>
+<!-- ============ GALAXY ============ -->
+<div id="galaxy-section">
+  <canvas id="galaxy" aria-label="Interactive map of all-time top songs, clustered by genre. Select a point to open it on Spotify."></canvas>
   <div class="hero-copy">
-    <div class="eyebrow">N16 · London · transmission ongoing</div>
+    <div class="eyebrow">N16 · London · signal archive</div>
     <h1>The Listening Field</h1>
-    <p class="hero-sub">A live map of what I keep coming back to. Every point is an artist in heavy rotation — tap one to open its file.</p>
+    <p class="hero-sub">Every point is one of my all-time most-played songs, clustered into six strata. Bigger point, more plays. Hover to identify; click to listen.</p>
   </div>
-  <div class="field-hint">signal nodes: 5<br>click / tap to tune in</div>
+  <div class="chips" id="chips"></div>
 </div>
+<div id="tooltip"><img id="tt-img" src="" alt=""><div class="tt-rank" id="tt-rank"></div><div class="tt-title" id="tt-title"></div><div class="tt-artist" id="tt-artist"></div></div>
 
-<!-- ============ DOSSIER PANEL ============ -->
-<aside id="dossier" aria-hidden="true">
-  <button class="close" onclick="closeDossier()">Close</button>
-  <img id="d-img" src="" alt="">
-  <div class="role" id="d-role"></div>
-  <h2 id="d-name"></h2>
-  <p id="d-blurb"></p>
-  <div class="dossier-tracks" id="d-tracks"></div>
-  <a class="spot-btn" id="d-link" href="#" target="_blank" rel="noopener">Open in Spotify →</a>
-</aside>
+<!-- ============ ALL-TIME 30 ============ -->
+<section id="chart">
+  <div class="sec-head"><span class="tag">01 · the record</span><h2>All-Time 30</h2></div>
+  <p class="sec-intro">Spotify's own count of what I've played most since the account began — no curation, no image management. The chart doesn't lie: Richard D. James appears seven times.</p>
+  <div class="podium" id="podium"></div>
+  <div id="chart-rows"></div>
+</section>
 
-<!-- ============ ROTATION ============ -->
-<section id="rotation">
-  <div class="sec-head"><span class="tag">02 · heavy rotation</span><h2>On repeat</h2></div>
-  <div class="track">
-    <img src="https://i.scdn.co/image/ab67616d00001e020ebc17239b6b18ba88cfb8ca" alt="Kind of Blue cover">
-    <div><div class="t-title">So What</div><div class="t-artist">Miles Davis · Kind of Blue</div></div>
-    <div class="t-meta">09:22<a href="https://open.spotify.com/track/4vLYewWIvqHfKtJDk8c8tq" target="_blank" rel="noopener">Spotify ↗</a></div>
-  </div>
-  <div class="track">
-    <img src="https://i.scdn.co/image/ab67616d00001e028155dc4dae262f31d39d8296" alt="Selected Ambient Works cover">
-    <div><div class="t-title">#3</div><div class="t-artist">Aphex Twin · Selected Ambient Works Vol. II</div></div>
-    <div class="t-meta">07:44<a href="https://open.spotify.com/track/7glKwbR1DyuIuE6XvZvJbQ" target="_blank" rel="noopener">Spotify ↗</a></div>
-  </div>
-  <div class="track">
-    <img src="https://i.scdn.co/image/ab67616d00001e026ea96ba633bead24af562890" alt="Syro cover">
-    <div><div class="t-title">aisatsana [102]</div><div class="t-artist">Aphex Twin · Syro</div></div>
-    <div class="t-meta">05:21<a href="https://open.spotify.com/track/5ljMlD10En5rRGZU0cs2Np" target="_blank" rel="noopener">Spotify ↗</a></div>
+<!-- ============ STRATA ============ -->
+<section id="strata">
+  <div class="sec-head"><span class="tag">02 · analysis</span><h2>Strata</h2></div>
+  <p class="sec-intro">What the top thirty reveals when you cut it two ways: by decade of release, and by who keeps showing up.</p>
+  <div class="stats-grid">
+    <div class="stat-block"><h3>By decade of release</h3><div id="decades"></div></div>
+    <div class="stat-block"><h3>Most appearances</h3><div id="leaderboard"></div></div>
   </div>
 </section>
 
-<!-- ============ GROUP CHAT ARCHIVE ============ -->
+<!-- ============ THE VAULT ============ -->
+<section id="vault">
+  <div class="sec-head"><span class="tag">03 · deep storage</span><h2>The Vault</h2></div>
+  <div class="vault-card">
+    <img src="https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da8481bbed440b60d9f1aedb4aaa" alt="Playlist cover">
+    <div>
+      <h3>Barry's Blockrockin' Beats</h3>
+      <div class="mono">ONE PLAYLIST · TWO DECADES OF ACCUMULATION · A–Z BY ARTIST</div>
+      <div class="big-num">4,063</div>
+      <div class="mono">TRACKS AND COUNTING — FROM AEROSMITH TO, EVENTUALLY, THE END OF THE ALPHABET</div>
+      <p style="margin:.9rem 0 1rem;color:var(--haze);font-size:.9rem">The everything drawer. Ska next to Skrillex, Jarre next to Jon Hopkins. The Field above is the signal; this is the whole transmission.</p>
+      <a class="mono" href="https://open.spotify.com/playlist/7pg3vaaz1oVNIziVgJ5ySe" target="_blank" rel="noopener" style="color:var(--apricot)">OPEN THE VAULT ON SPOTIFY ↗</a>
+    </div>
+  </div>
+  <div class="marquee" aria-hidden="true"><div class="marquee-track" id="mq"></div></div>
+</section>
+
+<!-- ============ GROUP CHAT ============ -->
 <section id="groupchat">
-  <div class="sec-head"><span class="tag">03 · the culture group</span><h2>Field notes from the group chat</h2></div>
+  <div class="sec-head"><span class="tag">04 · the culture group</span><h2>Field notes from the group chat</h2></div>
   <div class="archive-shell">
     <div class="mono">ARCHIVE SLOT · AWAITING WHATSAPP EXPORT (.TXT)</div>
     <div class="bubble-demo" aria-hidden="true">
       <div class="bubble"><b>MEMBER 01</b>right, who's actually been to the Eno show</div>
       <div class="bubble"><b>MEMBER 02</b>me. life-changing. lighting alone worth it</div>
       <div class="bubble"><b>MEMBER 01</b>booking for saturday then, no arguments</div>
+    </div>
+    <p class="mono">Structure is built: parsed messages render as bubbles, grouped by month, with a highlights reel of the best exchanges. Drop the export in and it populates — names initialled by default to keep the group's privacy.</p>
+  </div>
+</section>
+
+<footer>
+  <div>© CAMERA · MMXXVI</div>
+  <div>Recorded live in Stoke Newington</div>
+</footer>
+
+<script>
+/* =========================================================
+   DATA — real All-Time Top Songs (Spotify play-count order)
+   ========================================================= */
+const STRATA={
+  machine:{label:"Machine Music",color:"#78c8bc"},
+  boombap:{label:"Boom Bap",color:"#e0975c"},
+  roots:{label:"Roots & Ska",color:"#d4b45a"},
+  groove:{label:"Groove",color:"#c77f9e"},
+  songbook:{label:"Songbook",color:"#f0e9da"},
+  blue:{label:"Blue Notes",color:"#7d9cc9"},
+};
+const IMG=h=>"https://i.scdn.co/image/"+h;
+const URLT=id=>"https://open.spotify.com/track/"+id;
+const T=(rank,title,artist,year,s,img,id)=>({rank,title,artist,year,s,img:IMG(img),url:URLT(id)});
+const TRACKS=[
+T(1,"Everything in Its Right Place","Radiohead",2000,"songbook","ab67616d00004851f1ac4f358752b321586b3d78","31DVVa40JpTudyGDNC1ROW"),
+T(2,"Altibzz","Autechre",2008,"machine","ab67616d000048511e0ed618fe330cbea19e9044","2dqLO6897sZKnAAXuOcdGW"),
+T(3,"Fantastic Man","William Onyeabor",1977,"groove","ab67616d000048517d888ba80671344d590b6256","2fl4Z6FRDXutSBKvKHSJcV"),
+T(4,"Dayvan Cowboy","Boards of Canada",2005,"machine","ab67616d0000485175ea8510776626eb920260c5","4Y2W4zKa3q72ztbkA0r8Va"),
+T(5,"Rhymes Like Dimes","MF DOOM",1999,"boombap","ab67616d0000485123d1fc4a98e11ffb4de8e61c","2hfkiGEyh2Sx5sl6JII6sp"),
+T(6,"Grown Up","Danny Brown",2012,"boombap","ab67616d00004851be5a09000b5d0eb43a35ff24","5ic68M3jaJTEUcEIh5PcqX"),
+T(7,"An Ending (Ascent)","Brian Eno",1983,"machine","ab67616d00004851f2b52822fe54084cf07bfe02","1vgSaC0BPlL6LEm4Xsx59J"),
+T(8,"Train To Skaville","The Ethiopians",1967,"roots","ab67616d00004851f907b80e26a5b492e23fc4f2","5f45hqKKBRkkWAvtS2nmGx"),
+T(9,"Xtal","Aphex Twin",1992,"machine","ab67616d0000485138906032688bb13b135ce19a","7o2AeQZzfCERsRmOM86EcB"),
+T(10,"All Caps","Madvillain",2004,"boombap","ab67616d0000485102abe1eaf9da931f42629b4a","1Y2ExJJ9Dmb9po8K0ybSj3"),
+T(11,"So What","Miles Davis",1959,"blue","ab67616d000048510ebc17239b6b18ba88cfb8ca","4vLYewWIvqHfKtJDk8c8tq"),
+T(12,"The Jam","A Tribe Called Quest",1997,"boombap","ab67616d00004851e3b93c08d98f92dc3ab0146a","0kMDFI2uqA16c8rWzXWlAU"),
+T(13,"Slowly","Amon Tobin",1997,"machine","ab67616d000048512b55a540f6d58f8e9973b5e8","2pLBnncte8HnrPKM2D6ag5"),
+T(14,"Avril 14th","Aphex Twin",2001,"machine","ab67616d00004851a5aef98a1762d0f64bb6ed9a","2MZSXhq4XDJWu6coGoXX1V"),
+T(15,"Can I Kick It?","A Tribe Called Quest",1990,"boombap","ab67616d000048514ba1fe238a517021ebcc2ace","3Ti0GdlrotgwsAVBBugv0I"),
+T(16,"Carbonated","Mount Kimbie",2010,"machine","ab67616d00004851c5966e06089feda5603730c1","5d3qZ4xZv0inQK292Mmnhh"),
+T(17,"PAPAT4 [155][pineal mix]","Aphex Twin",2014,"machine","ab67616d000048518b68d772e75d4f280cea0ef0","2MmI2fOFAYnOJcMyWkn1js"),
+T(18,"I'm Waiting For The Man","The Velvet Underground",1967,"songbook","ab67616d000048515406f6aafd2e07c1f374ba37","2J9GLqNATExevUPvpLU1Sl"),
+T(19,"#3","Aphex Twin",1994,"machine","ab67616d0000485132083f1a325ed4939f1fbecd","2Bc4llhjJBW77I552RgA3L"),
+T(20,"Da Feelin","Nightmares On Wax",2006,"groove","ab67616d00004851e2d276d02265cfd1adc0ee81","4JCmpKszRvku5euErqBIPO"),
+T(21,"#20","Aphex Twin",1994,"machine","ab67616d0000485132083f1a325ed4939f1fbecd","5IExVHUiRccCWyJ4imu9qD"),
+T(22,"Made To Stray","Mount Kimbie",2013,"machine","ab67616d00004851eef6e115fd6a7782df30358b","6t3GC2nW76Lqx3kAwZixUi"),
+T(23,"Glassworks: Floe","Philip Glass",1982,"blue","ab67616d0000485133035388fa575823277e0d61","4yFU6FhkuzsAiv5UIjL0YN"),
+T(24,"Hypnotize","The Notorious B.I.G.",1997,"boombap","ab67616d00004851639fea4197e676cfe9512e04","6Tsu3OsuMz4KEGKbOYd6A0"),
+T(25,"Alphabet Aerobics","Blackalicious",1999,"boombap","ab67616d000048514c8023f3fa779011c4af48d9","4z5L0qDduw3w1apQ4Qa6KV"),
+T(26,"4","Aphex Twin",1996,"machine","ab67616d0000485100a2c8519996a0bc41e9abf1","00wT7HAtqZ2BnemrR34vbO"),
+T(27,"minipops 67 [source field mix]","Aphex Twin",2014,"machine","ab67616d00004851312d9d2af8ed9a13238d042d","2okhtzYxqQdvCpIkASC97y"),
+T(28,"007 (Shanty Town)","Desmond Dekker",1967,"roots","ab67616d0000485164309e837788c4b0106fbc40","7hwvbkchjTc5JXEZ4xmQX7"),
+T(29,"Just To Get A Rep","Gang Starr",1990,"boombap","ab67616d00004851adb5dbf4251255a00146d8eb","7w97KFJwa6NdUsAEaQNjmD"),
+];
+const VAULT_SAMPLE=[
+ ["Cold Water Music — Aim","23LL15KgZBaf7TEI5Lj6Bz"],
+ ["Oxygène Pt. IV — Jean-Michel Jarre","4qMZfA0bUQfGmXQNVB08pB"],
+ ["Go — Moby","2s93xBF4xiRPIVBUYZ3huA"],
+ ["Woo Hoo — The 5.6.7.8's","6GA8fbPKP6KZ3fP75AIjRI"],
+ ["Dream On — Aerosmith","07KHJvlYBeQVqrmifTEqEp"],
+ ["Planet Rock — Afrika Bambaataa","5ZSDLOVEhZlvqcI6ELAT44"],
+ ["La femme d'argent — Air","3ZzhV6JIDKWvWR7wiKWD0C"],
+ ["Faden Away — 7 Days Of Funk","5RadObdlcpncgIUfR8WUtL"],
+ ["Wherever You Are — Ulrich Schnauss","1PVnuV7xWekJsI3XyC16J0"],
+ ["Wild for the Night — A$AP Rocky","22Mme5vsZ688TMUieIHdx3"],
+];
+
+/* ================= galaxy canvas ================= */
+const cv=document.getElementById('galaxy'),ctx=cv.getContext('2d');
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const activeStrata=new Set(Object.keys(STRATA));
+let W,H,DPR,nodes=[],hover=-1,t=0;
+
+function size(){
+  DPR=Math.min(devicePixelRatio||1,2);
+  W=cv.clientWidth;H=cv.clientHeight;
+  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);
+  layout();
+}
+function layout(){
+  const keys=Object.keys(STRATA);
+  const centers={};
+  const cx=W*.58,cy=H*.5,R=Math.min(W,H)*.3;
+  keys.forEach((k,i)=>{
+    const a=(i/keys.length)*Math.PI*2 - Math.PI/2;
+    centers[k]={x:cx+Math.cos(a)*R*.9,y:cy+Math.sin(a)*R*.75};
+  });
+  // count per stratum for spiral packing
+  const idx={};
+  nodes=TRACKS.map(tr=>{
+    idx[tr.s]=(idx[tr.s]||0)+1;
+    const n=idx[tr.s];
+    const ang=n*2.4, rad=10+n*13;
+    const c=centers[tr.s];
+    const base=Math.min(W,H);
+    return {tr,
+      baseX:c.x+Math.cos(ang)*rad*(base/700),
+      baseY:c.y+Math.sin(ang)*rad*(base/700),
+      x:0,y:0,ph:tr.rank*1.31,
+      size:Math.max(6,(base*.05)*(1-(tr.rank-1)/34))};
+  });
+}
+function step(){
+  t++;ctx.clearRect(0,0,W,H);
+  const g=ctx.createRadialGradient(W*.58,H*.5,0,W*.58,H*.5,Math.max(W,H)*.7);
+  g.addColorStop(0,'rgba(62,107,102,.25)');g.addColorStop(1,'rgba(20,40,42,0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+
+  const drift=reduceMotion?0:1;
+  nodes.forEach(n=>{
+    n.x=n.baseX+Math.sin(t*.005+n.ph)*8*drift;
+    n.y=n.baseY+Math.cos(t*.004+n.ph*1.3)*6*drift;
+  });
+
+  // faint intra-stratum threads
+  ctx.lineWidth=1;
+  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+    const a=nodes[i],b=nodes[j];
+    if(a.tr.s!==b.tr.s)continue;
+    if(!activeStrata.has(a.tr.s))continue;
+    ctx.strokeStyle='rgba(143,166,160,.12)';
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+  }
+
+  nodes.forEach((n,i)=>{
+    const on=activeStrata.has(n.tr.s);
+    const h=i===hover&&on;
+    const col=STRATA[n.tr.s].color;
+    ctx.globalAlpha=on?1:.12;
+    ctx.beginPath();ctx.arc(n.x,n.y,n.size,0,Math.PI*2);
+    ctx.fillStyle=h?'#ffffff':col;ctx.fill();
+    if(h){ctx.beginPath();ctx.arc(n.x,n.y,n.size+6,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.stroke();}
+    ctx.globalAlpha=1;
+  });
+  requestAnimationFrame(step);
+}
+function pick(px,py){
+  let uments</div>
     </div>
     <p class="mono">Structure is built: parsed messages render as bubbles above, grouped by month, with a highlights reel of the best exchanges. Drop the export in and it populates — names get initialled by default to keep the group's privacy.</p>
   </div>
