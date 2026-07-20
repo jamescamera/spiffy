@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAMERA — The Listening Field</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Instrument+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pine:#14282a;      /* deep teal-slate ground */
+    --sea:#3e6b66;       /* faded sea */
+    --apricot:#e0975c;   /* sun-bleached accent */
+    --bone:#f0e9da;      /* warm off-white text */
+    --haze:#8fa6a0;      /* utility haze */
+    --ink:#0c1a1c;       /* deepest layer */
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--pine);
+    color:var(--bone);
+    font-family:'Instrument Sans',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  /* film grain */
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.07;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  a{color:var(--apricot);text-decoration:none}
+  a:hover{text-decoration:underline}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--apricot);outline-offset:3px}
+
+  /* ---------- header ---------- */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:40;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:1.1rem 1.5rem;mix-blend-mode:normal;
+  }
+  .wordmark{font-family:'Syne',sans-serif;font-weight:800;letter-spacing:.28em;font-size:.95rem;color:var(--bone)}
+  nav{display:flex;gap:1.4rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+  nav a{color:var(--haze)}
+  nav a:hover{color:var(--apricot);text-decoration:none}
+
+  /* ---------- hero / field ---------- */
+  #field-section{position:relative;height:100vh;min-height:620px}
+  #field{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
+  .hero-copy{
+    position:absolute;left:1.5rem;bottom:2.2rem;z-index:5;max-width:34rem;pointer-events:none;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--apricot);margin-bottom:.8rem;
+  }
+  h1{
+    font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(2.1rem,5.4vw,4rem);
+    line-height:1.05;letter-spacing:-.01em;
+  }
+  .hero-sub{color:var(--haze);margin-top:1rem;max-width:26rem;font-size:.95rem}
+  .field-hint{
+    position:absolute;right:1.5rem;bottom:2.2rem;z-index:5;
+    font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--haze);
+    letter-spacing:.1em;text-transform:uppercase;text-align:right;
+  }
+
+  /* ---------- dossier panel ---------- */
+  #dossier{
+    position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);z-index:60;
+    background:var(--ink);border-left:1px solid rgba(240,233,218,.12);
+    transform:translateX(102%);transition:transform .45s cubic-bezier(.2,.8,.2,1);
+    padding:2rem 1.8rem;overflow-y:auto;
+  }
+  #dossier.open{transform:translateX(0)}
+  #dossier .close{
+    background:none;border:1px solid rgba(240,233,218,.25);color:var(--bone);
+    font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.15em;
+    padding:.45rem .9rem;cursor:pointer;text-transform:uppercase;margin-bottom:1.6rem;
+  }
+  #dossier .close:hover{border-color:var(--apricot);color:var(--apricot)}
+  #dossier img{width:100%;aspect-ratio:1;object-fit:cover;filter:saturate(.8) contrast(1.05);margin-bottom:1.2rem}
+  #dossier h2{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:700;margin-bottom:.4rem}
+  #dossier .role{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--apricot);letter-spacing:.18em;text-transform:uppercase;margin-bottom:1rem}
+  #dossier p{color:var(--haze);font-size:.92rem;margin-bottom:1.4rem}
+  .dossier-tracks{border-top:1px solid rgba(240,233,218,.12);padding-top:1rem;margin-bottom:1.4rem}
+  .dossier-tracks div{font-family:'IBM Plex Mono',monospace;font-size:.78rem;padding:.4rem 0;color:var(--bone)}
+  .spot-btn{
+    display:inline-block;background:var(--apricot);color:var(--ink);font-weight:600;
+    font-size:.85rem;padding:.65rem 1.2rem;border-radius:999px;
+  }
+  .spot-btn:hover{text-decoration:none;filter:brightness(1.08)}
+
+  /* ---------- sections ---------- */
+  section{padding:6rem 1.5rem;max-width:960px;margin:0 auto}
+  .sec-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:2.4rem}
+  .sec-head h2{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(1.6rem,3.4vw,2.4rem)}
+  .sec-head .tag{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--apricot);letter-spacing:.2em;text-transform:uppercase}
+
+  /* rotation (tracks) */
+  .track{
+    display:grid;grid-template-columns:64px 1fr auto;gap:1.1rem;align-items:center;
+    padding:1rem 0;border-top:1px solid rgba(240,233,218,.12);
+  }
+  .track:last-of-type{border-bottom:1px solid rgba(240,233,218,.12)}
+  .track img{width:64px;height:64px;object-fit:cover;filter:saturate(.85)}
+  .track .t-title{font-weight:500}
+  .track .t-artist{color:var(--haze);font-size:.86rem}
+  .track .t-meta{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--haze);text-align:right}
+  .track .t-meta a{display:block;margin-top:.25rem}
+
+  /* group chat archive */
+  #groupchat .archive-shell{
+    border:1px dashed rgba(224,151,92,.5);padding:2.2rem;text-align:left;
+  }
+  #groupchat .mono{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--haze)}
+  .bubble-demo{margin:1.4rem 0;display:flex;flex-direction:column;gap:.5rem;max-width:26rem}
+  .bubble{
+    background:rgba(62,107,102,.35);border:1px solid rgba(143,166,160,.25);
+    padding:.55rem .85rem;border-radius:2px 12px 12px 12px;font-size:.85rem;color:var(--bone);opacity:.75;
+  }
+  .bubble b{color:var(--apricot);font-weight:500;font-family:'IBM Plex Mono',monospace;font-size:.68rem;display:block;letter-spacing:.08em}
+
+  footer{
+    padding:3rem 1.5rem;border-top:1px solid rgba(240,233,218,.12);
+    font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--haze);
+    display:flex;justify-content:space-between;letter-spacing:.1em;text-transform:uppercase;
+  }
+
+  @media (max-width:640px){
+    .field-hint{display:none}
+    .hero-copy{left:1.1rem;right:1.1rem;bottom:1.6rem}
+    section{padding:4rem 1.1rem}
+    .track{grid-template-columns:48px 1fr auto}
+    .track img{width:48px;height:48px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    #dossier{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wordmark">CAMERA</div>
+  <nav>
+    <a href="#field-section">Field</a>
+    <a href="#rotation">Rotation</a>
+    <a href="#groupchat">The Group</a>
+  </nav>
+</header>
+
+<!-- ============ THE LISTENING FIELD ============ -->
+<div id="field-section">
+  <canvas id="field" aria-label="Interactive map of favourite artists. Each point is an artist; select one to open details."></canvas>
+  <div class="hero-copy">
+    <div class="eyebrow">N16 · London · transmission ongoing</div>
+    <h1>The Listening Field</h1>
+    <p class="hero-sub">A live map of what I keep coming back to. Every point is an artist in heavy rotation — tap one to open its file.</p>
+  </div>
+  <div class="field-hint">signal nodes: 5<br>click / tap to tune in</div>
+</div>
+
+<!-- ============ DOSSIER PANEL ============ -->
+<aside id="dossier" aria-hidden="true">
+  <button class="close" onclick="closeDossier()">Close</button>
+  <img id="d-img" src="" alt="">
+  <div class="role" id="d-role"></div>
+  <h2 id="d-name"></h2>
+  <p id="d-blurb"></p>
+  <div class="dossier-tracks" id="d-tracks"></div>
+  <a class="spot-btn" id="d-link" href="#" target="_blank" rel="noopener">Open in Spotify →</a>
+</aside>
+
+<!-- ============ ROTATION ============ -->
+<section id="rotation">
+  <div class="sec-head"><span class="tag">02 · heavy rotation</span><h2>On repeat</h2></div>
+  <div class="track">
+    <img src="https://i.scdn.co/image/ab67616d00001e020ebc17239b6b18ba88cfb8ca" alt="Kind of Blue cover">
+    <div><div class="t-title">So What</div><div class="t-artist">Miles Davis · Kind of Blue</div></div>
+    <div class="t-meta">09:22<a href="https://open.spotify.com/track/4vLYewWIvqHfKtJDk8c8tq" target="_blank" rel="noopener">Spotify ↗</a></div>
+  </div>
+  <div class="track">
+    <img src="https://i.scdn.co/image/ab67616d00001e028155dc4dae262f31d39d8296" alt="Selected Ambient Works cover">
+    <div><div class="t-title">#3</div><div class="t-artist">Aphex Twin · Selected Ambient Works Vol. II</div></div>
+    <div class="t-meta">07:44<a href="https://open.spotify.com/track/7glKwbR1DyuIuE6XvZvJbQ" target="_blank" rel="noopener">Spotify ↗</a></div>
+  </div>
+  <div class="track">
+    <img src="https://i.scdn.co/image/ab67616d00001e026ea96ba633bead24af562890" alt="Syro cover">
+    <div><div class="t-title">aisatsana [102]</div><div class="t-artist">Aphex Twin · Syro</div></div>
+    <div class="t-meta">05:21<a href="https://open.spotify.com/track/5ljMlD10En5rRGZU0cs2Np" target="_blank" rel="noopener">Spotify ↗</a></div>
+  </div>
+</section>
+
+<!-- ============ GROUP CHAT ARCHIVE ============ -->
+<section id="groupchat">
+  <div class="sec-head"><span class="tag">03 · the culture group</span><h2>Field notes from the group chat</h2></div>
+  <div class="archive-shell">
+    <div class="mono">ARCHIVE SLOT · AWAITING WHATSAPP EXPORT (.TXT)</div>
+    <div class="bubble-demo" aria-hidden="true">
+      <div class="bubble"><b>MEMBER 01</b>right, who's actually been to the Eno show</div>
+      <div class="bubble"><b>MEMBER 02</b>me. life-changing. lighting alone worth it</div>
+      <div class="bubble"><b>MEMBER 01</b>booking for saturday then, no arguments</div>
+    </div>
+    <p class="mono">Structure is built: parsed messages render as bubbles above, grouped by month, with a highlights reel of the best exchanges. Drop the export in and it populates — names get initialled by default to keep the group's privacy.</p>
+  </div>
+</section>
+
+<footer>
+  <div>© CAMERA · MMXXVI</div>
+  <div>Recorded live in Stoke Newington</div>
+</footer>
+
+<script>
+/* ================= data ================= */
+const ARTISTS=[
+  {name:"Aphex Twin",role:"Electronic · Cornwall via everywhere",
+   blurb:"The centre of the field. From acid to the most tender piano pieces ever sequenced — nothing else covers this much ground.",
+   img:"https://i.scdn.co/image/ab67616100005174aa3c91d792eb520a5d58daa5",
+   link:"https://open.spotify.com/artist/6kBDZFXuLrZgHnvmPu9NsG",
+   tracks:["#3 — SAW Vol. II","aisatsana [102] — Syro"],hue:28,r:1.0},
+  {name:"Boards of Canada",role:"Downtempo · Scotland",
+   blurb:"Sun-bleached tape memories. This whole site is lit in their colour grade.",
+   img:"https://i.scdn.co/image/ab676161000051748d582d93756e158b968cc35d",
+   link:"https://open.spotify.com/artist/2VAvhf61GgLYmC6C8anyX1",
+   tracks:[],hue:22,r:.85},
+  {name:"Miles Davis",role:"Jazz · the source",
+   blurb:"So What has been the most reliable nine minutes in the library for decades and counting.",
+   img:"https://i.scdn.co/image/ab6772690000bac312f90798134ecfe8dcb99db6",
+   link:"https://open.spotify.com/artist/0kbYTNQb4Pb1rPbbaF0pT4",
+   tracks:["So What — Kind of Blue"],hue:40,r:.9},
+  {name:"Brian Eno",role:"Ambient · systems music",
+   blurb:"Music as a place rather than an event. The listening field itself is basically an Eno idea.",
+   img:"https://i.scdn.co/image/ab676161000051745533ce5711f95f0c436b30fe",
+   link:"https://open.spotify.com/artist/7MSUfLeTdDEoZiJPDSBXgi",
+   tracks:[],hue:170,r:.85},
+  {name:"Geese",role:"Rock · Brooklyn, new blood",
+   blurb:"The newest node on the map — proof the field is still expanding.",
+   img:"https://i.scdn.co/image/ab67616100005174bc9546a945c7563a9eb21f3d",
+   link:"https://open.spotify.com/artist/0WCo84qtCKfbyIf1lqQWB4",
+   tracks:[],hue:8,r:.7},
+];
+
+/* ================= field canvas ================= */
+const cv=document.getElementById('field'),ctx=cv.getContext('2d');
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let W,H,DPR,nodes=[],ripples=[],hover=-1,t=0;
+
+function size(){
+  DPR=Math.min(devicePixelRatio||1,2);
+  W=cv.clientWidth;H=cv.clientHeight;
+  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);
+  layout();
+}
+function layout(){
+  nodes=ARTISTS.map((a,i)=>{
+    const ang=(i/ARTISTS.length)*Math.PI*2 - Math.PI/2;
+    const cx=W*.55, cy=H*.42;
+    const rad=Math.min(W,H)*.28*(0.75+((i*37)%40)/100);
+    return {a, baseX:cx+Math.cos(ang)*rad, baseY:cy+Math.sin(ang)*rad,
+            x:0,y:0, ph:i*1.7, size:(Math.min(W,H)*.028)*a.r+8, nextRip:i*90};
+  });
+}
+function step(){
+  t++;
+  ctx.clearRect(0,0,W,H);
+  // ambient horizon glow
+  const g=ctx.createRadialGradient(W*.55,H*.42,0,W*.55,H*.42,Math.max(W,H)*.7);
+  g.addColorStop(0,'rgba(62,107,102,.28)');g.addColorStop(1,'rgba(20,40,42,0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+
+  // position nodes (slow drift)
+  nodes.forEach(n=>{
+    const drift=reduceMotion?0:1;
+    n.x=n.baseX+Math.sin(t*.004+n.ph)*14*drift;
+    n.y=n.baseY+Math.cos(t*.003+n.ph*1.3)*10*drift;
+  });
+
+  // connecting lines
+  ctx.strokeStyle='rgba(143,166,160,.18)';ctx.lineWidth=1;
+  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+    ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();
+  }
+
+  // ripples
+  if(!reduceMotion){
+    nodes.forEach((n,i)=>{ if(t>n.nextRip){ripples.push({x:n.x,y:n.y,r:n.size,a:.45,hue:n.a.hue});n.nextRip=t+240+((i*97)%160);} });
+    ripples=ripples.filter(r=>r.a>0.01);
+    ripples.forEach(r=>{
+      r.r+=.8;r.a*=.985;
+      ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,Math.PI*2);
+      ctx.strokeStyle=`hsla(${r.hue},55%,65%,${r.a})`;ctx.lineWidth=1.2;ctx.stroke();
+    });
+  }
+
+  // nodes
+  nodes.forEach((n,i)=>{
+    const h=i===hover;
+    ctx.beginPath();ctx.arc(n.x,n.y,n.size,0,Math.PI*2);
+    ctx.fillStyle=h?'#e0975c':`hsla(${n.a.hue},45%,${h?70:60}%,.9)`;
+    ctx.fill();
+    ctx.beginPath();ctx.arc(n.x,n.y,n.size+5,0,Math.PI*2);
+    ctx.strokeStyle=`rgba(240,233,218,${h?.8:.3})`;ctx.lineWidth=1;ctx.stroke();
+    // label
+    ctx.font=(h?'600 ':'400 ')+'12px "IBM Plex Mono", monospace';
+    ctx.fillStyle=h?'#f0e9da':'rgba(240,233,218,.65)';
+    ctx.textAlign='center';
+    ctx.fillText(n.a.name.toUpperCase(),n.x,n.y-n.size-12);
+  });
+  requestAnimationFrame(step);
+}
+function pick(px,py){
+  for(let i=0;i<nodes.length;i++){
+    const n=nodes[i];
+    if(Math.hypot(px-n.x,py-n.y)<n.size+14)return i;
+  }return -1;
+}
+cv.addEventListener('mousemove',e=>{
+  const r=cv.getBoundingClientRect();
+  hover=pick(e.clientX-r.left,e.clientY-r.top);
+  cv.style.cursor=hover>-1?'pointer':'crosshair';
+});
+cv.addEventListener('click',e=>{
+  const r=cv.getBoundingClientRect();
+  const i=pick(e.clientX-r.left,e.clientY-r.top);
+  if(i>-1)openDossier(ARTISTS[i]);
+});
+
+/* ================= dossier ================= */
+const dossier=document.getElementById('dossier');
+function openDossier(a){
+  document.getElementById('d-img').src=a.img;
+  document.getElementById('d-img').alt=a.name;
+  document.getElementById('d-name').textContent=a.name;
+  document.getElementById('d-role').textContent=a.role;
+  document.getElementById('d-blurb').textContent=a.blurb;
+  document.getElementById('d-link').href=a.link;
+  const tr=document.getElementById('d-tracks');
+  tr.innerHTML=a.tracks.length?a.tracks.map(x=>`<div>▸ ${x}</div>`).join(''):'<div style="color:var(--haze)">in the rotation — see full catalogue on Spotify</div>';
+  dossier.classList.add('open');dossier.setAttribute('aria-hidden','false');
+}
+function closeDossier(){dossier.classList.remove('open');dossier.setAttribute('aria-hidden','true');}
+addEventListener('keydown',e=>{if(e.key==='Escape')closeDossier();});
+
+addEventListener('resize',size);
+size();requestAnimationFrame(step);
+</script>
+</body>
+</html>
