@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ILSC·FM — THE LISTENING FIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Anton&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#07080a; --acid:#d4ff00; --chrome:#c7cdd4; --blood:#ff3600; --dim:#5a616b; --panel:#0d0f12;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--void);color:var(--chrome);font-family:'Space Mono',monospace;line-height:1.55;overflow-x:hidden}
+  ::selection{background:var(--acid);color:var(--void)}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:95;opacity:.5;
+    background:repeating-linear-gradient(to bottom,transparent 0 3px,rgba(0,0,0,.18) 3px 4px)}
+  a{color:var(--acid);text-decoration:none}
+  a:hover{background:var(--acid);color:var(--void)}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--acid);outline-offset:2px}
+  .blk{font-family:'Pirata One',serif;font-weight:400}
+  .mono-xs{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+
+  .rail{position:fixed;z-index:60;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);pointer-events:none}
+  .rail-l{left:.55rem;top:50%;transform:rotate(180deg) translateY(50%);writing-mode:vertical-rl}
+  .rail-r{right:.55rem;top:50%;transform:translateY(-50%);writing-mode:vertical-rl}
+  @media(max-width:860px){.rail{display:none}}
+
+  header{position:fixed;top:0;left:0;right:0;z-index:70;display:flex;justify-content:space-between;align-items:center;
+    padding:.75rem 1.2rem;border-bottom:1px solid rgba(199,205,212,.18);background:rgba(7,8,10,.88);backdrop-filter:blur(4px)}
+  .wordmark{display:flex;align-items:baseline;gap:.6rem}
+  .wordmark .blk{font-size:1.5rem;color:var(--chrome);line-height:1}
+  .wordmark .mono-xs{color:var(--acid)}
+  nav{display:flex;gap:1.1rem;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;flex-wrap:wrap}
+  nav a{color:var(--dim)}
+  nav a:hover{color:var(--void)}
+
+  .strip{overflow:hidden;border-top:1px solid rgba(199,205,212,.18);border-bottom:1px solid rgba(199,205,212,.18);background:var(--void)}
+  .strip-inner{display:flex;white-space:nowrap;animation:mq 26s linear infinite;padding:.4rem 0}
+  .strip-inner span{font-family:'Pirata One',serif;font-size:1.05rem;color:var(--acid);padding:0 1.2rem}
+  .strip-inner i{font-style:normal;color:var(--dim)}
+  @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .strip.rev .strip-inner{animation-direction:reverse}
+
+  #galaxy-section{position:relative;height:100vh;min-height:700px;border-bottom:1px solid rgba(199,205,212,.18)}
+  #galaxy{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .hero-copy{position:absolute;left:1.2rem;top:4.6rem;z-index:5;pointer-events:none;max-width:min(92vw,54rem)}
+  .hero-copy .mono-xs{color:var(--acid);margin-bottom:.2rem}
+  h1.blk{font-size:clamp(3.4rem,12vw,9.5rem);line-height:.88;color:var(--chrome);text-shadow:3px 3px 0 rgba(255,54,0,.55)}
+  h1 .ghost{color:transparent;-webkit-text-stroke:1.5px var(--dim)}
+  .hero-sub{font-size:.72rem;letter-spacing:.08em;color:var(--dim);max-width:26rem;margin-top:.9rem;text-transform:uppercase}
+  .hero-stamp{position:absolute;right:1.2rem;top:5rem;z-index:5;text-align:right;font-size:.6rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--dim);pointer-events:none;line-height:2}
+  .hero-stamp b{color:var(--acid);font-weight:400}
+  .chips{position:absolute;left:1.2rem;bottom:1.4rem;z-index:6;display:flex;gap:.4rem;flex-wrap:wrap;max-width:calc(100% - 2.4rem)}
+  .chip{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+    padding:.4rem .7rem;border:1px solid rgba(199,205,212,.3);background:rgba(7,8,10,.75);color:var(--chrome);
+    cursor:pointer;display:flex;align-items:center;gap:.45rem}
+  .chip .dot{width:8px;height:8px}
+  .chip.off{opacity:.3}
+  .chip:hover{border-color:var(--acid)}
+  #tooltip{position:fixed;z-index:80;pointer-events:none;display:none;background:var(--void);border:1px solid var(--acid);padding:.55rem;width:198px}
+  #tooltip img{width:100%;aspect-ratio:1;object-fit:cover;margin-bottom:.45rem;filter:contrast(1.1) saturate(.9)}
+  #tooltip .tt-rank{font-size:.58rem;color:var(--acid);letter-spacing:.16em}
+  #tooltip .tt-title{font-family:'Anton',sans-serif;font-size:.92rem;line-height:1.15;color:#fff;text-transform:uppercase;margin:.15rem 0}
+  #tooltip .tt-artist{color:var(--dim);font-size:.66rem;text-transform:uppercase;letter-spacing:.08em}
+
+  section{padding:5rem 1.2rem;max-width:1080px;margin:0 auto;position:relative}
+  .sec-num{position:absolute;top:2.2rem;right:1.2rem;font-family:'Pirata One',serif;font-size:clamp(3rem,8vw,6rem);
+    color:transparent;-webkit-text-stroke:1px rgba(199,205,212,.25);line-height:1;pointer-events:none}
+  .sec-head .mono-xs{color:var(--acid);margin-bottom:.3rem}
+  .sec-head h2{font-family:'Anton',sans-serif;font-size:clamp(2rem,6vw,4rem);text-transform:uppercase;color:#fff;line-height:1;margin-bottom:.9rem}
+  .sec-intro{font-size:.74rem;color:var(--dim);max-width:40rem;margin-bottom:2.4rem;text-transform:uppercase;letter-spacing:.05em}
+
+  .podium{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(199,205,212,.18);border:1px solid rgba(199,205,212,.18);margin-bottom:2.4rem}
+  .pod{position:relative;background:var(--panel)}
+  .pod img{width:100%;aspect-ratio:1;object-fit:cover;filter:contrast(1.08) saturate(.85);display:block}
+  .pod .p-rank{position:absolute;top:.15rem;left:.35rem;font-family:'Pirata One',serif;font-size:2.6rem;color:var(--acid);
+    text-shadow:2px 2px 0 var(--void);line-height:1;z-index:2}
+  .pod .p-body{padding:.6rem .6rem .75rem}
+  .pod .p-title{font-family:'Anton',sans-serif;font-size:.8rem;text-transform:uppercase;color:#fff;line-height:1.2}
+  .pod .p-artist{color:var(--dim);font-size:.6rem;margin-top:.2rem;letter-spacing:.1em;text-transform:uppercase}
+  .pod a{display:block;color:inherit}
+  .pod a:hover{background:none}
+  .pod a:hover .p-title{color:var(--acid)}
+
+  .row{display:grid;grid-template-columns:3rem 44px 1fr auto;gap:.8rem;align-items:center;padding:.5rem 0;border-top:1px solid rgba(199,205,212,.14)}
+  .row:last-of-type{border-bottom:1px solid rgba(199,205,212,.14)}
+  .row .r-rank{font-family:'Pirata One',serif;font-size:1.4rem;color:var(--dim)}
+  .row img{width:44px;height:44px;object-fit:cover;filter:contrast(1.08) saturate(.85)}
+  .row .r-title{font-family:'Anton',sans-serif;font-size:.9rem;text-transform:uppercase;color:var(--chrome);line-height:1.2}
+  .row .r-artist{color:var(--dim);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase}
+  .row .r-meta{text-align:right;font-size:.6rem;color:var(--dim);display:flex;gap:.7rem;align-items:center;letter-spacing:.1em}
+  .stratum-pill{display:inline-block;width:9px;height:9px}
+
+  .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
+  .stat-block h3{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--acid);margin-bottom:1.1rem;border-bottom:1px solid rgba(199,205,212,.18);padding-bottom:.5rem}
+  .bar-row{display:grid;grid-template-columns:3.2rem 1fr 2rem;gap:.6rem;align-items:center;margin-bottom:.45rem;font-size:.62rem;color:var(--dim)}
+  .bar{height:12px;background:var(--acid);min-width:2px}
+  .lb-row{display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid rgba(199,205,212,.12);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}
+  .lb-row .n{color:var(--blood)}
+
+  .vault-card{display:grid;grid-template-columns:190px 1fr;gap:1.6rem;border:1px solid rgba(199,205,212,.18);background:var(--panel);padding:1.4rem;margin-bottom:1.4rem}
+  .vault-card img{width:190px;height:190px;object-fit:cover;filter:contrast(1.1) saturate(.85)}
+  .vault-card h3{font-family:'Anton',sans-serif;font-size:1.3rem;text-transform:uppercase;color:#fff;margin-bottom:.25rem}
+  .big-num{font-family:'Pirata One',serif;font-size:clamp(3rem,9vw,5.4rem);color:var(--acid);line-height:1;margin:.4rem 0 .3rem;text-shadow:3px 3px 0 rgba(255,54,0,.5)}
+
+  #ilsc{max-width:none;padding:0;border-top:1px solid rgba(199,205,212,.18)}
+  .ilsc-hero{padding:4.5rem 1.2rem 2.5rem;text-align:center;position:relative;overflow:hidden}
+  .ilsc-hero .blk-title{font-family:'Pirata One',serif;font-size:clamp(2.6rem,9.5vw,7.5rem);line-height:.95;color:#fff;text-shadow:4px 4px 0 var(--blood)}
+  .ilsc-hero .mono-xs{color:var(--acid);margin-bottom:.6rem}
+  .ilsc-hero .sub{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:1rem}
+  .ilsc-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-top:1px solid rgba(199,205,212,.18);border-bottom:1px solid rgba(199,205,212,.18)}
+  .ist{padding:1.2rem 1rem;border-right:1px solid rgba(199,205,212,.18);text-align:center}
+  .ist:last-child{border-right:none}
+  .ist .v{font-family:'Pirata One',serif;font-size:2.4rem;color:var(--acid);line-height:1}
+  .ist .k{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-top:.35rem}
+  .ilsc-inner{max-width:1080px;margin:0 auto;padding:3.5rem 1.2rem}
+  .ilsc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-bottom:3.5rem}
+  .tl{display:flex;align-items:flex-end;gap:2px;height:120px;border-bottom:1px solid rgba(199,205,212,.3)}
+  .tl div{flex:1;background:var(--dim);min-height:2px}
+  .tl div.hot{background:var(--blood)}
+  .tl div:hover{background:var(--acid)}
+  .tl-cap{display:flex;justify-content:space-between;font-size:.56rem;color:var(--dim);letter-spacing:.14em;margin-top:.4rem;text-transform:uppercase}
+  .tx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1px;background:rgba(199,205,212,.18);border:1px solid rgba(199,205,212,.18)}
+  .tx{background:var(--panel);padding:1.1rem;position:relative}
+  .tx .q{font-family:'Anton',sans-serif;font-size:1.02rem;line-height:1.3;color:var(--chrome);text-transform:uppercase}
+  .tx .who{margin-top:.8rem;font-size:.58rem;letter-spacing:.18em;color:var(--acid);text-transform:uppercase}
+  .tx .d{color:var(--dim)}
+  .tx:hover{background:#12151a}
+  .tx:hover .q{color:var(--acid)}
+
+  footer{padding:2.5rem 1.2rem;border-top:1px solid rgba(199,205,212,.18);font-size:.58rem;color:var(--dim);
+    display:flex;justify-content:space-between;letter-spacing:.16em;text-transform:uppercase;flex-wrap:wrap;gap:.5rem}
+  footer b{color:var(--acid);font-weight:400}
+
+  @media(max-width:760px){
+    .podium{grid-template-columns:repeat(2,1fr)}
+    .stats-grid,.ilsc-grid{grid-template-columns:1fr}
+    .vault-card{grid-template-columns:1fr}
+    .vault-card img{width:130px;height:130px}
+    section{padding:3.6rem 1.2rem}
+    .hero-stamp{display:none}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .strip-inner{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="rail rail-l">51.56°N 0.07°W · STOKE NEWINGTON · TRANSMISSION ONGOING</div>
+<div class="rail rail-r">ILSC·FM · CAT NO. ILSC-001 · PRESSED MMXXVI · SIDE A</div>
+
+<header>
+  <div class="wordmark"><span class="blk">ILSC·FM</span><span class="mono-xs">by Camera</span></div>
+  <nav>
+    <a href="#galaxy-section">Field</a>
+    <a href="#chart">All-Time 30</a>
+    <a href="#strata">Strata</a>
+    <a href="#vault">Vault</a>
+    <a href="#ilsc">The Group</a>
+  </nav>
+</header>
+
+<div id="galaxy-section">
+  <canvas id="galaxy" aria-label="Map of all-time top songs clustered by genre. Select a point to open it on Spotify."></canvas>
+  <div class="hero-copy">
+    <div class="mono-xs">DOC. 01 — SPOTIFY PLAY-COUNT RECORD, COMPLETE &amp; UNEDITED</div>
+    <h1 class="blk">The Listening<br><span class="ghost">Field</span></h1>
+    <p class="hero-sub">Every point: one all-time most-played track · size = rank · hover to identify · click to play</p>
+  </div>
+  <div class="hero-stamp">
+    SIGNAL NODES <b>29</b><br>STRATA <b>06</b><br>APHEX DENSITY <b>24%</b><br>STATUS <b>LIVE</b>
+  </div>
+  <div class="chips" id="chips"></div>
+</div>
+<div id="tooltip"><img id="tt-img" src="" alt=""><div class="tt-rank" id="tt-rank"></div><div class="tt-title" id="tt-title"></div><div class="tt-artist" id="tt-artist"></div></div>
+
+<div class="strip" aria-hidden="true"><div class="strip-inner" id="strip1"></div></div>
+
+<section id="chart">
+  <div class="sec-num">I</div>
+  <div class="sec-head"><div class="mono-xs">DOC. 02 — THE RECORD</div><h2>All-Time 30</h2></div>
+  <p class="sec-intro">Spotify's own count of most-played since the account began. No curation, no image management. Richard D. James appears seven times.</p>
+  <div class="podium" id="podium"></div>
+  <div id="chart-rows"></div>
+</section>
+
+<section id="strata">
+  <div class="sec-num">II</div>
+  <div class="sec-head"><div class="mono-xs">DOC. 03 — ANALYSIS</div><h2>Strata</h2></div>
+  <p class="sec-intro">The top thirty cut two ways: by decade of release, and by who keeps showing up.</p>
+  <div class="stats-grid">
+    <div class="stat-block"><h3>By decade of release</h3><div id="decades"></div></div>
+    <div class="stat-block"><h3>Most appearances</h3><div id="leaderboard"></div></div>
+  </div>
+</section>
+
+<section id="vault">
+  <div class="sec-num">III</div>
+  <div class="sec-head"><div class="mono-xs">DOC. 04 — DEEP STORAGE</div><h2>The Vault</h2></div>
+  <div class="vault-card">
+    <img src="https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da8481bbed440b60d9f1aedb4aaa" alt="Playlist cover">
+    <div>
+      <h3>Barry's Blockrockin' Beats</h3>
+      <div class="mono-xs">ONE PLAYLIST · TWO DECADES OF ACCUMULATION · A–Z BY ARTIST</div>
+      <div class="big-num">4,063</div>
+      <div class="mono-xs">TRACKS AND COUNTING — AEROSMITH TO, EVENTUALLY, THE END OF THE ALPHABET</div>
+      <p style="margin:.8rem 0 .9rem;font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em">Ska next to Skrillex. Jarre next to Jon Hopkins. The Field above is the signal; this is the whole transmission.</p>
+      <a href="https://open.spotify.com/playlist/7pg3vaaz1oVNIziVgJ5ySe" target="_blank" rel="noopener" style="font-size:.66rem;letter-spacing:.16em">[ OPEN THE VAULT ON SPOTIFY ]</a>
+    </div>
+  </div>
+</section>
+
+<div class="strip rev" aria-hidden="true"><div class="strip-inner" id="strip2"></div></div>
+
+<section id="ilsc">
+  <div class="ilsc-hero">
+    <div class="mono-xs">DOC. 05 — GROUP TRANSMISSION LOG · EST. 13.08.2015 · EXPORT 2023–2026</div>
+    <div class="blk-title">"I'm like,<br>so cultural"</div>
+    <div class="sub">Twelve correspondents · one WhatsApp thread · every link, gig &amp; banger logged</div>
+  </div>
+
+  <div class="ilsc-stats">
+    <div class="ist"><div class="v">2,177</div><div class="k">Messages</div></div>
+    <div class="ist"><div class="v">12</div><div class="k">Members</div></div>
+    <div class="ist"><div class="v">94</div><div class="k">Spotify links</div></div>
+    <div class="ist"><div class="v">320</div><div class="k">Media dropped</div></div>
+    <div class="ist"><div class="v">11:00</div><div class="k">Peak posting hour</div></div>
+  </div>
+
+  <div class="ilsc-inner">
+    <div class="ilsc-grid">
+      <div class="stat-block">
+        <h3>Activity · Oct 2023 → Jul 2026</h3>
+        <div class="tl" id="timeline"></div>
+        <div class="tl-cap"><span>OCT 23</span><span style="color:var(--blood)">AUG 24 — THE SURGE: 249</span><span>JUL 26</span></div>
+      </div>
+      <div class="stat-block">
+        <h3>Correspondents · by volume</h3>
+        <div id="members"></div>
+      </div>
+    </div>
+
+    <div class="stat-block" style="margin-bottom:1rem"><h3>Selected transmissions · sic throughout</h3></div>
+    <div class="tx-grid" id="txgrid"></div>
+  </div>
+</section>
+
+<footer>
+  <div><b>ILSC·FM</b> · A CAMERA PRODUCTION</div>
+  <div>RECORDED LIVE IN STOKE NEWINGTON · <b>MMXXVI</b></div>
+</footer>
+
+<script>
+const STRATA={
+  machine:{label:"Machine Music",color:"#d4ff00"},
+  boombap:{label:"Boom Bap",color:"#ff3600"},
+  roots:{label:"Roots & Ska",color:"#ffb800"},
+  groove:{label:"Groove",color:"#ff7adf"},
+  songbook:{label:"Songbook",color:"#c7cdd4"},
+  blue:{label:"Blue Notes",color:"#6e7bff"},
+};
+const IMG=h=>"https://i.scdn.co/image/"+h;
+const URLT=id=>"https://open.spotify.com/track/"+id;
+const T=(rank,title,artist,year,s,img,id)=>({rank,title,artist,year,s,img:IMG(img),url:URLT(id)});
+const TRACKS=[
+T(1,"Everything in Its Right Place","Radiohead",2000,"songbook","ab67616d00004851f1ac4f358752b321586b3d78","31DVVa40JpTudyGDNC1ROW"),
+T(2,"Altibzz","Autechre",2008,"machine","ab67616d000048511e0ed618fe330cbea19e9044","2dqLO6897sZKnAAXuOcdGW"),
+T(3,"Fantastic Man","William Onyeabor",1977,"groove","ab67616d000048517d888ba80671344d590b6256","2fl4Z6FRDXutSBKvKHSJcV"),
+T(4,"Dayvan Cowboy","Boards of Canada",2005,"machine","ab67616d0000485175ea8510776626eb920260c5","4Y2W4zKa3q72ztbkA0r8Va"),
+T(5,"Rhymes Like Dimes","MF DOOM",1999,"boombap","ab67616d0000485123d1fc4a98e11ffb4de8e61c","2hfkiGEyh2Sx5sl6JII6sp"),
+T(6,"Grown Up","Danny Brown",2012,"boombap","ab67616d00004851be5a09000b5d0eb43a35ff24","5ic68M3jaJTEUcEIh5PcqX"),
+T(7,"An Ending (Ascent)","Brian Eno",1983,"machine","ab67616d00004851f2b52822fe54084cf07bfe02","1vgSaC0BPlL6LEm4Xsx59J"),
+T(8,"Train To Skaville","The Ethiopians",1967,"roots","ab67616d00004851f907b80e26a5b492e23fc4f2","5f45hqKKBRkkWAvtS2nmGx"),
+T(9,"Xtal","Aphex Twin",1992,"machine","ab67616d0000485138906032688bb13b135ce19a","7o2AeQZzfCERsRmOM86EcB"),
+T(10,"All Caps","Madvillain",2004,"boombap","ab67616d0000485102abe1eaf9da931f42629b4a","1Y2ExJJ9Dmb9po8K0ybSj3"),
+T(11,"So What","Miles Davis",1959,"blue","ab67616d000048510ebc17239b6b18ba88cfb8ca","4vLYewWIvqHfKtJDk8c8tq"),
+T(12,"The Jam","A Tribe Called Quest",1997,"boombap","ab67616d00004851e3b93c08d98f92dc3ab0146a","0kMDFI2uqA16c8rWzXWlAU"),
+T(13,"Slowly","Amon Tobin",1997,"machine","ab67616d000048512b55a540f6d58f8e9973b5e8","2pLBnncte8HnrPKM2D6ag5"),
+T(14,"Avril 14th","Aphex Twin",2001,"machine","ab67616d00004851a5aef98a1762d0f64bb6ed9a","2MZSXhq4XDJWu6coGoXX1V"),
+T(15,"Can I Kick It?","A Tribe Called Quest",1990,"boombap","ab67616d000048514ba1fe238a517021ebcc2ace","3Ti0GdlrotgwsAVBBugv0I"),
+T(16,"Carbonated","Mount Kimbie",2010,"machine","ab67616d00004851c5966e06089feda5603730c1","5d3qZ4xZv0inQK292Mmnhh"),
+T(17,"PAPAT4 [155][pineal mix]","Aphex Twin",2014,"machine","ab67616d000048518b68d772e75d4f280cea0ef0","2MmI2fOFAYnOJcMyWkn1js"),
+T(18,"I'm Waiting For The Man","The Velvet Underground",1967,"songbook","ab67616d000048515406f6aafd2e07c1f374ba37","2J9GLqNATExevUPvpLU1Sl"),
+T(19,"#3","Aphex Twin",1994,"machine","ab67616d0000485132083f1a325ed4939f1fbecd","2Bc4llhjJBW77I552RgA3L"),
+T(20,"Da Feelin","Nightmares On Wax",2006,"groove","ab67616d00004851e2d276d02265cfd1adc0ee81","4JCmpKszRvku5euErqBIPO"),
+T(21,"#20","Aphex Twin",1994,"machine","ab67616d0000485132083f1a325ed4939f1fbecd","5IExVHUiRccCWyJ4imu9qD"),
+T(22,"Made To Stray","Mount Kimbie",2013,"machine","ab67616d00004851eef6e115fd6a7782df30358b","6t3GC2nW76Lqx3kAwZixUi"),
+T(23,"Glassworks: Floe","Philip Glass",1982,"blue","ab67616d0000485133035388fa575823277e0d61","4yFU6FhkuzsAiv5UIjL0YN"),
+T(24,"Hypnotize","The Notorious B.I.G.",1997,"boombap","ab67616d00004851639fea4197e676cfe9512e04","6Tsu3OsuMz4KEGKbOYd6A0"),
+T(25,"Alphabet Aerobics","Blackalicious",1999,"boombap","ab67616d000048514c8023f3fa779011c4af48d9","4z5L0qDduw3w1apQ4Qa6KV"),
+T(26,"4","Aphex Twin",1996,"machine","ab67616d0000485100a2c8519996a0bc41e9abf1","00wT7HAtqZ2BnemrR34vbO"),
+T(27,"minipops 67 [source field mix]","Aphex Twin",2014,"machine","ab67616d00004851312d9d2af8ed9a13238d042d","2okhtzYxqQdvCpIkASC97y"),
+T(28,"007 (Shanty Town)","Desmond Dekker",1967,"roots","ab67616d0000485164309e837788c4b0106fbc40","7hwvbkchjTc5JXEZ4xmQX7"),
+T(29,"Just To Get A Rep","Gang Starr",1990,"boombap","ab67616d00004851adb5dbf4251255a00146d8eb","7w97KFJwa6NdUsAEaQNjmD"),
+];
+
+const MONTHLY=[6,119,145,108,36,65,60,53,44,63,249,111,64,116,77,31,24,59,120,60,57,36,37,32,67,51,57,18,31,56,18,67,37,3];
+const MEMBERS=[["B.S. ✦",481],["M.M.",354],["N.F.",350],["T.A.",200],["M.B.",174],["S.C.",174],["D.C.",168],["T.",86],["S.M.",81],["J.O'R.",62],["D.L.",45],["J.",2]];
+const TX=[
+ ["New song from a band called The Beatles","B.S. ✦","02.11.23"],
+ ["Check your watch, it's taxi time","T.A.","11.11.23"],
+ ["Bang bang banger","M.M.","02.11.23"],
+ ["Where are my friends tonight?!","M.M.","01.12.23"],
+ ["Legit thought it was Michael Fry","B.S. ✦","26.10.23"],
+ ["Mad that all our names are in that. What a belter.","M.M.","21.12.23"],
+ ["Big soda burying the WHO advice on aspartame. That's a topic for 'I'm like, so conspiratorial'","T.A.","06.01.24"],
+ ["Oh is this a joke song too? That makes more sense","N.F.","27.11.24"],
+ ["Shazza Osbourne really going for it","M.M.","29.04.25"],
+ ["Sounds like Thom Yorke a little","S.C.","08.11.25"],
+ ["Feels like Nathan For You levels of absurdness towards the end","N.F.","16.05.24"],
+ ["10/10 see ya later boyos","M.B.","14.10.23"],
+];
+
+const cv=document.getElementById('galaxy'),ctx=cv.getContext('2d');
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const activeStrata=new Set(Object.keys(STRATA));
+let W,H,DPR,nodes=[],hover=-1,t=0;
+function size(){
+  DPR=Math.min(devicePixelRatio||1,2);
+  W=cv.clientWidth;H=cv.clientHeight;
+  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);
+  layout();
+}
+function layout(){
+  const keys=Object.keys(STRATA),centers={};
+  const cx=W*.6,cy=H*.54,R=Math.min(W,H)*.3;
+  keys.forEach((k,i)=>{
+    const a=(i/keys.length)*Math.PI*2 - Math.PI/2;
+    centers[k]={x:cx+Math.cos(a)*R*.95,y:cy+Math.sin(a)*R*.72};
+  });
+  const idx={};
+  nodes=TRACKS.map(tr=>{
+    idx[tr.s]=(idx[tr.s]||0)+1;
+    const n=idx[tr.s],ang=n*2.4,rad=10+n*13,c=centers[tr.s],base=Math.min(W,H);
+    return {tr,baseX:c.x+Math.cos(ang)*rad*(base/700),baseY:c.y+Math.sin(ang)*rad*(base/700),
+      x:0,y:0,ph:tr.rank*1.31,size:Math.max(6,(base*.05)*(1-(tr.rank-1)/34))};
+  });
+}
+function step(){
+  t++;ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(199,205,212,.06)';ctx.lineWidth=1;
+  const gs=Math.max(60,Math.floor(W/16));
+  for(let x=0;x<W;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  const drift=reduceMotion?0:1;
+  nodes.forEach(n=>{
+    n.x=n.baseX+Math.sin(t*.005+n.ph)*8*drift;
+    n.y=n.baseY+Math.cos(t*.004+n.ph*1.3)*6*drift;
+  });
+  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+    const a=nodes[i],b=nodes[j];
+    if(a.tr.s!==b.tr.s||!activeStrata.has(a.tr.s))continue;
+    ctx.strokeStyle='rgba(199,205,212,.14)';
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+  }
+  nodes.forEach((n,i)=>{
+    const on=activeStrata.has(n.tr.s),h=i===hover&&on,col=STRATA[n.tr.s].color;
+    ctx.globalAlpha=on?1:.1;
+    const s=n.size;
+    ctx.fillStyle=h?'#ffffff':col;
+    ctx.fillRect(n.x-s/1.4,n.y-s/1.4,s*1.45,s*1.45);
+    if(h){ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.strokeRect(n.x-s/1.4-5,n.y-s/1.4-5,s*1.45+10,s*1.45+10);}
+    ctx.globalAlpha=1;
+  });
+  requestAnimationFrame(step);
+}
+function pick(px,py){
+  let best=-1,bd=1e9;
+  nodes.forEach((n,i)=>{
+    if(!activeStrata.has(n.tr.s))return;
+    const d=Math.hypot(px-n.x,py-n.y);
+    if(d<n.size+10&&d<bd){bd=d;best=i;}
+  });
+  return best;
+}
+const tip=document.getElementById('tooltip');
+cv.addEventListener('mousemove',e=>{
+  const r=cv.getBoundingClientRect();
+  hover=pick(e.clientX-r.left,e.clientY-r.top);
+  if(hover>-1){
+    const tr=nodes[hover].tr;
+    document.getElementById('tt-img').src=tr.img;
+    document.getElementById('tt-rank').textContent='Nº '+String(tr.rank).padStart(2,'0')+' / '+STRATA[tr.s].label.toUpperCase()+' / '+tr.year;
+    document.getElementById('tt-title').textContent=tr.title;
+    document.getElementById('tt-artist').textContent=tr.artist;
+    tip.style.display='block';
+    tip.style.left=Math.min(e.clientX+16,innerWidth-214)+'px';
+    tip.style.top=Math.min(e.clientY+16,innerHeight-290)+'px';
+    cv.style.cursor='pointer';
+  }else{tip.style.display='none';cv.style.cursor='default';}
+});
+cv.addEventListener('mouseleave',()=>{tip.style.display='none';hover=-1;});
+cv.addEventListener('click',e=>{
+  const r=cv.getBoundingClientRect();
+  const i=pick(e.clientX-r.left,e.clientY-r.top);
+  if(i>-1)window.open(nodes[i].tr.url,'_blank','noopener');
+});
+const chipsEl=document.getElementById('chips');
+Object.entries(STRATA).forEach(([k,s])=>{
+  const b=document.createElement('button');
+  b.className='chip';
+  b.innerHTML='<span class="dot" style="background:'+s.color+'"></span>'+s.label;
+  b.onclick=()=>{
+    if(activeStrata.has(k)&&activeStrata.size===1){Object.keys(STRATA).forEach(x=>activeStrata.add(x));}
+    else if(activeStrata.has(k))activeStrata.delete(k);
+    else activeStrata.add(k);
+    [...chipsEl.children].forEach((c,ci)=>c.classList.toggle('off',!activeStrata.has(Object.keys(STRATA)[ci])));
+  };
+  chipsEl.appendChild(b);
+});
+
+const stripTxt=(txt)=>Array(8).fill('<span>'+txt+' <i>✦</i></span>').join('');
+document.getElementById('strip1').innerHTML=stripTxt("THE LISTENING FIELD · ILSC·FM · N16 LONDON");
+document.getElementById('strip2').innerHTML=stripTxt("I'M LIKE, SO CULTURAL · EST. 2015 · TWELVE CORRESPONDENTS");
+
+const pod=document.getElementById('podium');
+TRACKS.slice(0,5).forEach(tr=>{
+  pod.insertAdjacentHTML('beforeend',
+   '<div class="pod"><a href="'+tr.url+'" target="_blank" rel="noopener">'+
+   '<span class="p-rank">'+tr.rank+'</span>'+
+   '<img src="'+tr.img+'" alt="'+tr.title+' artwork">'+
+   '<div class="p-body"><div class="p-title">'+tr.title+'</div><div class="p-artist">'+tr.artist+' · '+tr.year+'</div></div></a></div>');
+});
+const rowsEl=document.getElementById('chart-rows');
+TRACKS.slice(5).forEach(tr=>{
+  rowsEl.insertAdjacentHTML('beforeend',
+   '<div class="row"><div class="r-rank">'+tr.rank+'</div>'+
+   '<img src="'+tr.img+'" alt="" loading="lazy">'+
+   '<div><div class="r-title">'+tr.title+'</div><div class="r-artist">'+tr.artist+'</div></div>'+
+   '<div class="r-meta"><span class="stratum-pill" style="background:'+STRATA[tr.s].color+'" title="'+STRATA[tr.s].label+'"></span>'+tr.year+' <a href="'+tr.url+'" target="_blank" rel="noopener">[▶]</a></div></div>');
+});
+
+const dec={};
+TRACKS.forEach(tr=>{const d=Math.floor(tr.year/10)*10;dec[d]=(dec[d]||0)+1;});
+const maxD=Math.max(...Object.values(dec));
+const decEl=document.getElementById('decades');
+Object.keys(dec).sort().forEach(d=>{
+  decEl.insertAdjacentHTML('beforeend',
+   '<div class="bar-row"><span>'+d+'s</span><div class="bar" style="width:'+(dec[d]/maxD*100)+'%"></div><span>'+dec[d]+'</span></div>');
+});
+const counts={};
+TRACKS.forEach(tr=>{counts[tr.artist]=(counts[tr.artist]||0)+1;});
+const lb=Object.entries(counts).filter(([,c])=>c>1).sort((a,b)=>b[1]-a[1]);
+const lbEl=document.getElementById('leaderboard');
+lb.forEach(([a,c])=>lbEl.insertAdjacentHTML('beforeend','<div class="lb-row"><span>'+a+'</span><span class="n">×'+c+'</span></div>'));
+lbEl.insertAdjacentHTML('beforeend','<div class="lb-row"><span style="color:var(--dim)">Everyone else</span><span class="n">×1</span></div>');
+
+const tl=document.getElementById('timeline');
+const maxM=Math.max(...MONTHLY);
+MONTHLY.forEach(v=>{
+  const d=document.createElement('div');
+  d.style.height=(v/maxM*100)+'%';
+  d.title=v+' messages';
+  if(v===maxM)d.className='hot';
+  tl.appendChild(d);
+});
+const memEl=document.getElementById('members');
+const maxMem=MEMBERS[0][1];
+MEMBERS.forEach(([n,c])=>{
+  memEl.insertAdjacentHTML('beforeend',
+   '<div class="bar-row" style="grid-template-columns:3.6rem 1fr 2.4rem"><span style="color:var(--chrome)">'+n+'</span><div class="bar" style="width:'+(c/maxMem*100)+'%;background:'+(n.indexOf("B.S.")===0?"var(--blood)":"var(--acid)")+'"></div><span>'+c+'</span></div>');
+});
+const txEl=document.getElementById('txgrid');
+TX.forEach(([q,w,d])=>{
+  txEl.insertAdjacentHTML('beforeend',
+   '<div class="tx"><div class="q">“'+q+'”</div><div class="who">'+w+' <span class="d">· '+d+'</span></div></div>');
+});
+
+addEventListener('resize',size);
+size();requestAnimationFrame(step);
+</script>
+</body>
+</html>
