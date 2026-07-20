@@ -329,147 +329,95 @@ function step(){
   requestAnimationFrame(step);
 }
 function pick(px,py){
-  let uments</div>
-    </div>
-    <p class="mono">Structure is built: parsed messages render as bubbles above, grouped by month, with a highlights reel of the best exchanges. Drop the export in and it populates — names get initialled by default to keep the group's privacy.</p>
-  </div>
-</section>
-
-<footer>
-  <div>© CAMERA · MMXXVI</div>
-  <div>Recorded live in Stoke Newington</div>
-</footer>
-
-<script>
-/* ================= data ================= */
-const ARTISTS=[
-  {name:"Aphex Twin",role:"Electronic · Cornwall via everywhere",
-   blurb:"The centre of the field. From acid to the most tender piano pieces ever sequenced — nothing else covers this much ground.",
-   img:"https://i.scdn.co/image/ab67616100005174aa3c91d792eb520a5d58daa5",
-   link:"https://open.spotify.com/artist/6kBDZFXuLrZgHnvmPu9NsG",
-   tracks:["#3 — SAW Vol. II","aisatsana [102] — Syro"],hue:28,r:1.0},
-  {name:"Boards of Canada",role:"Downtempo · Scotland",
-   blurb:"Sun-bleached tape memories. This whole site is lit in their colour grade.",
-   img:"https://i.scdn.co/image/ab676161000051748d582d93756e158b968cc35d",
-   link:"https://open.spotify.com/artist/2VAvhf61GgLYmC6C8anyX1",
-   tracks:[],hue:22,r:.85},
-  {name:"Miles Davis",role:"Jazz · the source",
-   blurb:"So What has been the most reliable nine minutes in the library for decades and counting.",
-   img:"https://i.scdn.co/image/ab6772690000bac312f90798134ecfe8dcb99db6",
-   link:"https://open.spotify.com/artist/0kbYTNQb4Pb1rPbbaF0pT4",
-   tracks:["So What — Kind of Blue"],hue:40,r:.9},
-  {name:"Brian Eno",role:"Ambient · systems music",
-   blurb:"Music as a place rather than an event. The listening field itself is basically an Eno idea.",
-   img:"https://i.scdn.co/image/ab676161000051745533ce5711f95f0c436b30fe",
-   link:"https://open.spotify.com/artist/7MSUfLeTdDEoZiJPDSBXgi",
-   tracks:[],hue:170,r:.85},
-  {name:"Geese",role:"Rock · Brooklyn, new blood",
-   blurb:"The newest node on the map — proof the field is still expanding.",
-   img:"https://i.scdn.co/image/ab67616100005174bc9546a945c7563a9eb21f3d",
-   link:"https://open.spotify.com/artist/0WCo84qtCKfbyIf1lqQWB4",
-   tracks:[],hue:8,r:.7},
-];
-
-/* ================= field canvas ================= */
-const cv=document.getElementById('field'),ctx=cv.getContext('2d');
-const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let W,H,DPR,nodes=[],ripples=[],hover=-1,t=0;
-
-function size(){
-  DPR=Math.min(devicePixelRatio||1,2);
-  W=cv.clientWidth;H=cv.clientHeight;
-  cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);
-  layout();
-}
-function layout(){
-  nodes=ARTISTS.map((a,i)=>{
-    const ang=(i/ARTISTS.length)*Math.PI*2 - Math.PI/2;
-    const cx=W*.55, cy=H*.42;
-    const rad=Math.min(W,H)*.28*(0.75+((i*37)%40)/100);
-    return {a, baseX:cx+Math.cos(ang)*rad, baseY:cy+Math.sin(ang)*rad,
-            x:0,y:0, ph:i*1.7, size:(Math.min(W,H)*.028)*a.r+8, nextRip:i*90};
-  });
-}
-function step(){
-  t++;
-  ctx.clearRect(0,0,W,H);
-  // ambient horizon glow
-  const g=ctx.createRadialGradient(W*.55,H*.42,0,W*.55,H*.42,Math.max(W,H)*.7);
-  g.addColorStop(0,'rgba(62,107,102,.28)');g.addColorStop(1,'rgba(20,40,42,0)');
-  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-
-  // position nodes (slow drift)
-  nodes.forEach(n=>{
-    const drift=reduceMotion?0:1;
-    n.x=n.baseX+Math.sin(t*.004+n.ph)*14*drift;
-    n.y=n.baseY+Math.cos(t*.003+n.ph*1.3)*10*drift;
-  });
-
-  // connecting lines
-  ctx.strokeStyle='rgba(143,166,160,.18)';ctx.lineWidth=1;
-  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
-    ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();
-  }
-
-  // ripples
-  if(!reduceMotion){
-    nodes.forEach((n,i)=>{ if(t>n.nextRip){ripples.push({x:n.x,y:n.y,r:n.size,a:.45,hue:n.a.hue});n.nextRip=t+240+((i*97)%160);} });
-    ripples=ripples.filter(r=>r.a>0.01);
-    ripples.forEach(r=>{
-      r.r+=.8;r.a*=.985;
-      ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,Math.PI*2);
-      ctx.strokeStyle=`hsla(${r.hue},55%,65%,${r.a})`;ctx.lineWidth=1.2;ctx.stroke();
-    });
-  }
-
-  // nodes
+  let best=-1,bd=1e9;
   nodes.forEach((n,i)=>{
-    const h=i===hover;
-    ctx.beginPath();ctx.arc(n.x,n.y,n.size,0,Math.PI*2);
-    ctx.fillStyle=h?'#e0975c':`hsla(${n.a.hue},45%,${h?70:60}%,.9)`;
-    ctx.fill();
-    ctx.beginPath();ctx.arc(n.x,n.y,n.size+5,0,Math.PI*2);
-    ctx.strokeStyle=`rgba(240,233,218,${h?.8:.3})`;ctx.lineWidth=1;ctx.stroke();
-    // label
-    ctx.font=(h?'600 ':'400 ')+'12px "IBM Plex Mono", monospace';
-    ctx.fillStyle=h?'#f0e9da':'rgba(240,233,218,.65)';
-    ctx.textAlign='center';
-    ctx.fillText(n.a.name.toUpperCase(),n.x,n.y-n.size-12);
+    if(!activeStrata.has(n.tr.s))return;
+    const d=Math.hypot(px-n.x,py-n.y);
+    if(d<n.size+10&&d<bd){bd=d;best=i;}
   });
-  requestAnimationFrame(step);
+  return best;
 }
-function pick(px,py){
-  for(let i=0;i<nodes.length;i++){
-    const n=nodes[i];
-    if(Math.hypot(px-n.x,py-n.y)<n.size+14)return i;
-  }return -1;
-}
+const tip=document.getElementById('tooltip');
 cv.addEventListener('mousemove',e=>{
   const r=cv.getBoundingClientRect();
   hover=pick(e.clientX-r.left,e.clientY-r.top);
-  cv.style.cursor=hover>-1?'pointer':'crosshair';
+  if(hover>-1){
+    const tr=nodes[hover].tr;
+    document.getElementById('tt-img').src=tr.img;
+    document.getElementById('tt-rank').textContent='Nº '+String(tr.rank).padStart(2,'0')+' · '+STRATA[tr.s].label.toUpperCase()+' · '+tr.year;
+    document.getElementById('tt-title').textContent=tr.title;
+    document.getElementById('tt-artist').textContent=tr.artist;
+    tip.style.display='block';
+    const tx=Math.min(e.clientX+16,innerWidth-216), ty=Math.min(e.clientY+16,innerHeight-280);
+    tip.style.left=tx+'px';tip.style.top=ty+'px';
+    cv.style.cursor='pointer';
+  }else{tip.style.display='none';cv.style.cursor='default';}
 });
+cv.addEventListener('mouseleave',()=>{tip.style.display='none';hover=-1;});
 cv.addEventListener('click',e=>{
   const r=cv.getBoundingClientRect();
   const i=pick(e.clientX-r.left,e.clientY-r.top);
-  if(i>-1)openDossier(ARTISTS[i]);
+  if(i>-1)window.open(nodes[i].tr.url,'_blank','noopener');
 });
 
-/* ================= dossier ================= */
-const dossier=document.getElementById('dossier');
-function openDossier(a){
-  document.getElementById('d-img').src=a.img;
-  document.getElementById('d-img').alt=a.name;
-  document.getElementById('d-name').textContent=a.name;
-  document.getElementById('d-role').textContent=a.role;
-  document.getElementById('d-blurb').textContent=a.blurb;
-  document.getElementById('d-link').href=a.link;
-  const tr=document.getElementById('d-tracks');
-  tr.innerHTML=a.tracks.length?a.tracks.map(x=>`<div>▸ ${x}</div>`).join(''):'<div style="color:var(--haze)">in the rotation — see full catalogue on Spotify</div>';
-  dossier.classList.add('open');dossier.setAttribute('aria-hidden','false');
-}
-function closeDossier(){dossier.classList.remove('open');dossier.setAttribute('aria-hidden','true');}
-addEventListener('keydown',e=>{if(e.key==='Escape')closeDossier();});
+/* chips */
+const chipsEl=document.getElementById('chips');
+Object.entries(STRATA).forEach(([k,s])=>{
+  const b=document.createElement('button');
+  b.className='chip';
+  b.innerHTML=`<span class="dot" style="background:${s.color}"></span>${s.label}`;
+  b.onclick=()=>{
+    if(activeStrata.has(k)&&activeStrata.size===1){Object.keys(STRATA).forEach(x=>activeStrata.add(x));}
+    else if(activeStrata.has(k))activeStrata.delete(k);
+    else activeStrata.add(k);
+    [...chipsEl.children].forEach((c,ci)=>c.classList.toggle('off',!activeStrata.has(Object.keys(STRATA)[ci])));
+  };
+  chipsEl.appendChild(b);
+});
+
+/* ================= chart ================= */
+const pod=document.getElementById('podium');
+TRACKS.slice(0,5).forEach(tr=>{
+  pod.insertAdjacentHTML('beforeend',
+   `<div class="pod"><a href="${tr.url}" target="_blank" rel="noopener">
+      <span class="p-rank">${tr.rank}</span>
+      <img src="${tr.img}" alt="${tr.title} artwork">
+      <div class="p-body"><div class="p-title">${tr.title}</div><div class="p-artist">${tr.artist} · ${tr.year}</div></div>
+    </a></div>`);
+});
+const rowsEl=document.getElementById('chart-rows');
+TRACKS.slice(5).forEach(tr=>{
+  rowsEl.insertAdjacentHTML('beforeend',
+   `<div class="row">
+      <div class="r-rank">${String(tr.rank).padStart(2,'0')}</div>
+      <img src="${tr.img}" alt="" loading="lazy">
+      <div><div class="r-title">${tr.title}</div><div class="r-artist">${tr.artist}</div></div>
+      <div class="r-meta"><span class="stratum-pill" style="background:${STRATA[tr.s].color}" title="${STRATA[tr.s].label}"></span>${tr.year} <a href="${tr.url}" target="_blank" rel="noopener">↗</a></div>
+    </div>`);
+});
+
+/* ================= stats ================= */
+const dec={};
+TRACKS.forEach(tr=>{const d=Math.floor(tr.year/10)*10;dec[d]=(dec[d]||0)+1;});
+const maxD=Math.max(...Object.values(dec));
+const decEl=document.getElementById('decades');
+Object.keys(dec).sort().forEach(d=>{
+  decEl.insertAdjacentHTML('beforeend',
+   `<div class="bar-row"><span>${d}s</span><div class="bar" style="width:${dec[d]/maxD*100}%"></div><span>${dec[d]}</span></div>`);
+});
+const counts={};
+TRACKS.forEach(tr=>{counts[tr.artist]=(counts[tr.artist]||0)+1;});
+const lb=Object.entries(counts).filter(([,c])=>c>1).sort((a,b)=>b[1]-a[1]);
+const lbEl=document.getElementById('leaderboard');
+lb.forEach(([a,c])=>{
+  lbEl.insertAdjacentHTML('beforeend',`<div class="lb-row"><span>${a}</span><span class="n">×${c}</span></div>`);
+});
+lbEl.insertAdjacentHTML('beforeend',`<div class="lb-row"><span style="color:var(--haze)">Everyone else</span><span class="n">×1</span></div>`);
+
+/* ================= vault marquee ================= */
+const mq=document.getElementById('mq');
+const items=VAULT_SAMPLE.map(([n,id])=>`<a href="https://open.spotify.com/track/${id}" target="_blank" rel="noopener">${n}</a>`).join('<span style="color:var(--apricot)">·</span>');
+mq.innerHTML=items+'<span style="color:var(--apricot)">·</span>'+items;
 
 addEventListener('resize',size);
 size();requestAnimationFrame(step);
