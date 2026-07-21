@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ILSC·FM — THE LISTENING FIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Anton&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--void:#07080a;--acid:#d4ff00;--chrome:#c7cdd4;--blood:#ff3600;--dim:#5a616b;--panel:#0d0f12}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--void);color:var(--chrome);font-family:'Space Mono',monospace;line-height:1.55;overflow-x:hidden}
+::selection{background:var(--acid);color:var(--void)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:95;opacity:.5;background:repeating-linear-gradient(to bottom,transparent 0 3px,rgba(0,0,0,.18) 3px 4px)}
+a{color:var(--acid);text-decoration:none}
+a:hover{background:var(--acid);color:var(--void)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--acid);outline-offset:2px}
+.blk{font-family:'Pirata One',serif;font-weight:400}
+.mono-xs{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.rail{position:fixed;z-index:60;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);pointer-events:none}
+.rail-l{left:.55rem;top:50%;transform:rotate(180deg) translateY(50%);writing-mode:vertical-rl}
+.rail-r{right:.55rem;top:50%;transform:translateY(-50%);writing-mode:vertical-rl}
+@media(max-width:860px){.rail{display:none}}
+header{position:fixed;top:0;left:0;right:0;z-index:70;display:flex;justify-content:space-between;align-items:center;padding:.75rem 1.2rem;border-bottom:1px solid rgba(199,205,212,.18);background:rgba(7,8,10,.9);backdrop-filter:blur(6px)}
+.wordmark{display:flex;align-items:baseline;gap:.6rem}
+.wordmark .blk{font-size:1.5rem;color:var(--chrome);line-height:1}
+.wordmark .mono-xs{color:var(--acid)}
+nav{display:flex;gap:1rem;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;flex-wrap:wrap}
+nav a{color:var(--dim)}
+nav a:hover{color:var(--void)}
+.strip{overflow:hidden;border-top:1px solid rgba(199,205,212,.18);border-bottom:1px solid rgba(199,205,212,.18);background:var(--void)}
+.strip-inner{display:flex;white-space:nowrap;animation:mq 30s linear infinite;padding:.4rem 0}
+.strip-inner span{font-family:'Pirata One',serif;font-size:1.05rem;color:var(--acid);padding:0 1.2rem}
+.strip-inner i{font-style:normal;color:var(--dim)}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.strip.rev .strip-inner{animation-direction:reverse}
+/* EXPLORER */
+#explore{position:relative;height:100vh;min-height:720px;border-bottom:1px solid rgba(199,205,212,.18)}
+#galaxy{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+#galaxy:active{cursor:grabbing}
+.hero-copy{position:absolute;left:1.2rem;top:4.2rem;z-index:5;pointer-events:none;max-width:min(92vw,54rem)}
+.hero-copy .mono-xs{color:var(--acid);margin-bottom:.2rem}
+h1.blk{font-size:clamp(3rem,10.5vw,8.5rem);line-height:.86;color:var(--chrome);text-shadow:3px 3px 0 rgba(255,54,0,.55)}
+h1 .ghost{color:transparent;-webkit-text-stroke:1.5px var(--dim)}
+.hero-sub{font-size:.7rem;letter-spacing:.06em;color:var(--dim);max-width:30rem;margin-top:.8rem;text-transform:uppercase}
+.hero-stamp{position:absolute;right:1.2rem;top:4.6rem;z-index:5;text-align:right;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);pointer-events:none;line-height:2}
+.hero-stamp b{color:var(--acid);font-weight:400}
+.explore-ui{position:absolute;left:1.2rem;bottom:1.2rem;z-index:6;display:flex;gap:1.2rem;flex-wrap:wrap;align-items:flex-end;max-width:calc(100% - 2.4rem)}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap}
+.chip{font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.38rem .65rem;border:1px solid rgba(199,205,212,.3);background:rgba(7,8,10,.8);color:var(--chrome);cursor:pointer;display:flex;align-items:center;gap:.4rem}
+.chip .dot{width:8px;height:8px}
+.chip.off{opacity:.3}
+.chip:hover{border-color:var(--acid)}
+.mode-toggle{display:flex;border:1px solid rgba(199,205,212,.3)}
+.mode-toggle button{font-family:'Space Mono',monospace;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;padding:.38rem .7rem;background:rgba(7,8,10,.8);color:var(--dim);border:none;cursor:pointer;border-right:1px solid rgba(199,205,212,.2)}
+.mode-toggle button:last-child{border-right:none}
+.mode-toggle button.on{background:var(--acid);color:var(--void)}
+/* now-playing card */
+#nowcard{position:absolute;right:1.2rem;bottom:1.2rem;z-index:8;width:290px;border:1px solid var(--acid);background:var(--void);display:none}
+#nowcard.show{display:block}
+#nowcard .np-head{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;border-bottom:1px solid rgba(199,205,212,.2);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--acid)}
+#nowcard .np-close{cursor:pointer;color:var(--dim);background:none;border:none;font-size:.9rem;line-height:1}
+#nowcard iframe{width:100%;height:80px;display:block;border:0}
+#nowcard .np-meta{padding:.5rem .7rem;font-size:.58rem;color:var(--dim);letter-spacing:.08em}
+#tooltip{position:fixed;z-index:80;pointer-events:none;display:none;background:var(--void);border:1px solid var(--acid);padding:.55rem;width:210px}
+#tooltip .tt-thumb{width:100%;aspect-ratio:1;object-fit:cover;margin-bottom:.45rem;background:var(--panel);display:flex;align-items:center;justify-content:center}
+#tooltip .tt-thumb img{width:100%;height:100%;object-fit:cover}
+#tooltip .tt-thumb .fallback{font-family:'Pirata One',serif;font-size:2.4rem;color:var(--dim)}
+#tooltip .tt-rank{font-size:.56rem;color:var(--acid);letter-spacing:.14em}
+#tooltip .tt-title{font-family:'Anton',sans-serif;font-size:.94rem;line-height:1.1;color:#fff;text-transform:uppercase;margin:.15rem 0}
+#tooltip .tt-artist{color:var(--dim);font-size:.64rem;text-transform:uppercase;letter-spacing:.08em}
+#tooltip .tt-plays{color:var(--acid);font-size:.6rem;margin-top:.35rem;letter-spacing:.08em}
+section{padding:5rem 1.2rem;max-width:1080px;margin:0 auto;position:relative}
+.sec-num{position:absolute;top:2.2rem;right:1.2rem;font-family:'Pirata One',serif;font-size:clamp(3rem,8vw,6rem);color:transparent;-webkit-text-stroke:1px rgba(199,205,212,.25);line-height:1;pointer-events:none}
+.sec-head .mono-xs{color:var(--acid);margin-bottom:.3rem}
+.sec-head h2{font-family:'Anton',sans-serif;font-size:clamp(2rem,6vw,4rem);text-transform:uppercase;color:#fff;line-height:1;margin-bottom:.9rem}
+.sec-intro{font-size:.74rem;color:var(--dim);max-width:42rem;margin-bottom:2.4rem;text-transform:uppercase;letter-spacing:.05em;line-height:1.7}
+.statband{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));border:1px solid rgba(199,205,212,.18);margin-bottom:2.6rem}
+.sb{padding:1.2rem 1rem;border-right:1px solid rgba(199,205,212,.18);text-align:center}
+.sb:last-child{border-right:none}
+.sb .v{font-family:'Pirata One',serif;font-size:2.3rem;color:var(--acid);line-height:1}
+.sb .k{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-top:.35rem}
+.podium{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(199,205,212,.18);border:1px solid rgba(199,205,212,.18);margin-bottom:2.4rem}
+.pod{position:relative;background:var(--panel)}
+.pod .art{width:100%;aspect-ratio:1;object-fit:cover;filter:contrast(1.06) saturate(.85);display:block;background:var(--panel)}
+.pod .artfall{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:var(--panel);font-family:'Pirata One',serif;font-size:2.2rem;color:var(--dim)}
+.pod .p-rank{position:absolute;top:.1rem;left:.35rem;font-family:'Pirata One',serif;font-size:2.6rem;color:var(--acid);text-shadow:2px 2px 0 var(--void);line-height:1;z-index:2}
+.pod .p-plays{position:absolute;top:.5rem;right:.5rem;font-size:.6rem;color:#fff;background:var(--blood);padding:.1rem .35rem;z-index:2;letter-spacing:.05em}
+.pod .p-body{padding:.6rem .6rem .75rem}
+.pod .p-title{font-family:'Anton',sans-serif;font-size:.8rem;text-transform:uppercase;color:#fff;line-height:1.2}
+.pod .p-artist{color:var(--dim);font-size:.6rem;margin-top:.2rem;letter-spacing:.1em;text-transform:uppercase}
+.pod a{display:block;color:inherit}
+.pod a:hover{background:none}
+.pod a:hover .p-title{color:var(--acid)}
+.row{display:grid;grid-template-columns:2.6rem 44px 1fr auto;gap:.8rem;align-items:center;padding:.5rem 0;border-top:1px solid rgba(199,205,212,.14);cursor:pointer}
+.row:last-of-type{border-bottom:1px solid rgba(199,205,212,.14)}
+.row:hover{background:rgba(212,255,0,.04)}
+.row .r-rank{font-family:'Pirata One',serif;font-size:1.4rem;color:var(--dim)}
+.row .art{width:44px;height:44px;object-fit:cover;filter:contrast(1.06) saturate(.85);background:var(--panel)}
+.row .artfall{width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:var(--panel);font-family:'Pirata One',serif;font-size:1rem;color:var(--dim)}
+.row .r-title{font-family:'Anton',sans-serif;font-size:.9rem;text-transform:uppercase;color:var(--chrome);line-height:1.2}
+.row .r-artist{color:var(--dim);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase}
+.row .r-meta{text-align:right;font-size:.6rem;color:var(--dim);display:flex;gap:.7rem;align-items:center;letter-spacing:.08em}
+.row .r-plays{color:var(--acid)}
+.stratum-pill{display:inline-block;width:9px;height:9px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
+.stat-block h3{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--acid);margin-bottom:1.1rem;border-bottom:1px solid rgba(199,205,212,.18);padding-bottom:.5rem}
+.bar-row{display:grid;grid-template-columns:3.4rem 1fr 2.2rem;gap:.6rem;align-items:center;margin-bottom:.45rem;font-size:.62rem;color:var(--dim)}
+.bar{height:12px;background:var(--acid);min-width:2px}
+.era-row{display:grid;grid-template-columns:2.6rem 1fr auto;gap:.7rem;align-items:center;padding:.4rem 0;border-bottom:1px solid rgba(199,205,212,.1);font-size:.72rem}
+.era-row .y{font-family:'Pirata One',serif;font-size:1.1rem;color:var(--acid)}
+.era-row .a{text-transform:uppercase;letter-spacing:.05em;color:var(--chrome)}
+.era-row .h{font-size:.6rem;color:var(--dim)}
+.clock{display:flex;align-items:flex-end;gap:2px;height:120px;border-bottom:1px solid rgba(199,205,212,.3)}
+.clock div{flex:1;background:var(--dim);min-height:2px}
+.clock div.peak{background:var(--acid)}
+.clock-cap{display:flex;justify-content:space-between;font-size:.54rem;color:var(--dim);letter-spacing:.1em;margin-top:.4rem;text-transform:uppercase}
+.timeline{display:flex;align-items:flex-end;gap:3px;height:150px;border-bottom:1px solid rgba(199,205,212,.3);margin-top:1rem}
+.timeline .yr{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.timeline .yr .b{width:100%;background:var(--acid);min-height:2px;transition:background .2s}
+.timeline .yr:hover .b{background:var(--blood)}
+.timeline .yr .lab{font-size:.5rem;color:var(--dim);margin-top:.3rem;writing-mode:vertical-rl;transform:rotate(180deg)}
+.timeline .yr .val{font-size:.5rem;color:var(--chrome);margin-bottom:.2rem}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
+.marathon{border:1px solid rgba(199,205,212,.18);padding:1rem;margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center}
+.marathon .d{font-family:'Anton',sans-serif;font-size:1.1rem;color:#fff}
+.marathon .h{font-family:'Pirata One',serif;font-size:1.8rem;color:var(--acid)}
+.vault-card{display:grid;grid-template-columns:190px 1fr;gap:1.6rem;border:1px solid rgba(199,205,212,.18);background:var(--panel);padding:1.4rem;margin-top:2.4rem}
+.vault-card img{width:190px;height:190px;object-fit:cover;filter:contrast(1.1) saturate(.85)}
+.vault-card h3{font-family:'Anton',sans-serif;font-size:1.3rem;text-transform:uppercase;color:#fff;margin-bottom:.25rem}
+.big-num{font-family:'Pirata One',serif;font-size:clamp(3rem,9vw,5.4rem);color:var(--acid);line-height:1;margin:.4rem 0 .3rem;text-shadow:3px 3px 0 rgba(255,54,0,.5)}
+#ilsc{max-width:none;padding:0;border-top:1px solid rgba(199,205,212,.18)}
+.ilsc-hero{padding:4.5rem 1.2rem 2.5rem;text-align:center;position:relative;overflow:hidden}
+.ilsc-hero .blk-title{font-family:'Pirata One',serif;font-size:clamp(2.6rem,9.5vw,7.5rem);line-height:.95;color:#fff;text-shadow:4px 4px 0 var(--blood)}
+.ilsc-hero .mono-xs{color:var(--acid);margin-bottom:.6rem}
+.ilsc-hero .sub{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:1rem}
+.ilsc-inner{max-width:1080px;margin:0 auto;padding:3.5rem 1.2rem}
+.ilsc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-bottom:3.5rem}
+.tl{display:flex;align-items:flex-end;gap:2px;height:120px;border-bottom:1px solid rgba(199,205,212,.3)}
+.tl div{flex:1;background:var(--dim);min-height:2px}
+.tl div.hot{background:var(--blood)}
+.tl div:hover{background:var(--acid)}
+.tl-cap{display:flex;justify-content:space-between;font-size:.56rem;color:var(--dim);letter-spacing:.14em;margin-top:.4rem;text-transform:uppercase}
+.tx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1px;background:rgba(199,205,212,.18);border:1px solid rgba(199,205,212,.18)}
+.tx{background:var(--panel);padding:1.1rem}
+.tx .q{font-family:'Anton',sans-serif;font-size:1.02rem;line-height:1.3;color:var(--chrome);text-transform:uppercase}
+.tx .who{margin-top:.8rem;font-size:.58rem;letter-spacing:.18em;color:var(--acid);text-transform:uppercase}
+.tx .d{color:var(--dim)}
+.tx:hover{background:#12151a}
+.tx:hover .q{color:var(--acid)}
+.shared-slot{border:1px dashed rgba(212,255,0,.4);padding:2rem;margin-top:1.5rem;text-align:center}
+.shared-slot .mono-xs{color:var(--acid)}
+footer{padding:2.5rem 1.2rem;border-top:1px solid rgba(199,205,212,.18);font-size:.58rem;color:var(--dim);display:flex;justify-content:space-between;letter-spacing:.16em;text-transform:uppercase;flex-wrap:wrap;gap:.5rem}
+footer b{color:var(--acid);font-weight:400}
+@media(max-width:760px){.podium{grid-template-columns:repeat(2,1fr)}.stats-grid,.ilsc-grid,.two-col{grid-template-columns:1fr}.vault-card{grid-template-columns:1fr}.vault-card img{width:130px;height:130px}section{padding:3.6rem 1.2rem}.hero-stamp,#nowcard{display:none}#nowcard.show{display:block;left:1.2rem;right:1.2rem;width:auto;bottom:1.2rem}.explore-ui{bottom:5.5rem}}
+@media(prefers-reduced-motion:reduce){.strip-inner{animation:none}}
+
+/* CONSTELLATION */
+#constel{position:relative;height:80vh;min-height:560px;border:1px solid rgba(199,205,212,.18);background:radial-gradient(circle at 50% 45%,rgba(20,30,32,.6),var(--void));margin-bottom:1rem}
+#cgraph{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
+#cgraph:active{cursor:grabbing}
+.c-legend{position:absolute;top:1rem;left:1rem;z-index:3;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);line-height:1.9;pointer-events:none}
+.c-legend b{color:var(--acid);font-weight:400}
+.c-hint{position:absolute;bottom:1rem;right:1rem;z-index:3;font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-align:right;pointer-events:none}
+#cinfo{position:absolute;left:1rem;bottom:1rem;z-index:4;border:1px solid var(--acid);background:var(--void);padding:.7rem .9rem;display:none;max-width:260px}
+#cinfo.show{display:block}
+#cinfo .ci-name{font-family:'Anton',sans-serif;font-size:1.2rem;text-transform:uppercase;color:#fff;line-height:1}
+#cinfo .ci-meta{font-size:.58rem;color:var(--acid);letter-spacing:.1em;margin-top:.3rem;text-transform:uppercase}
+#cinfo .ci-links{font-size:.6rem;color:var(--dim);margin-top:.5rem;letter-spacing:.05em;text-transform:uppercase;line-height:1.5}
+#cinfo .ci-links b{color:var(--chrome);font-weight:400}
+/* TIME MACHINE */
+.tm{border:1px solid rgba(199,205,212,.18);margin-top:2.5rem}
+.tm-years{display:flex;flex-wrap:wrap;border-bottom:1px solid rgba(199,205,212,.18)}
+.tm-years button{flex:1;min-width:52px;font-family:'Space Mono',monospace;font-size:.62rem;padding:.6rem .2rem;background:var(--void);color:var(--dim);border:none;border-right:1px solid rgba(199,205,212,.12);cursor:pointer;letter-spacing:.04em}
+.tm-years button:last-child{border-right:none}
+.tm-years button.on{background:var(--acid);color:var(--void)}
+.tm-years button:hover:not(.on){color:var(--acid)}
+.tm-body{display:grid;grid-template-columns:auto 1fr auto;gap:1.4rem;align-items:center;padding:1.4rem}
+.tm-body .tm-art{width:96px;height:96px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-family:'Pirata One',serif;font-size:2.4rem;color:var(--dim)}
+.tm-body .tm-art img{width:100%;height:100%;object-fit:cover}
+.tm-body .tm-yr{font-family:'Pirata One',serif;font-size:3rem;color:var(--acid);line-height:1}
+.tm-body .tm-track{font-family:'Anton',sans-serif;font-size:1.4rem;text-transform:uppercase;color:#fff;line-height:1.1}
+.tm-body .tm-artist{color:var(--dim);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;margin-top:.2rem}
+.tm-body .tm-play{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--acid);color:var(--acid);padding:.5rem .8rem;cursor:pointer;background:none;white-space:nowrap}
+.tm-body .tm-play:hover{background:var(--acid);color:var(--void)}
+.gate-row{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:baseline;padding:.5rem 0;border-bottom:1px solid rgba(199,205,212,.1);font-size:.72rem}
+.gate-row .g-a{font-family:'Anton',sans-serif;text-transform:uppercase;color:var(--chrome);font-size:.9rem}
+.gate-row .g-t{color:var(--dim);font-size:.62rem;text-transform:uppercase;letter-spacing:.06em}
+.gate-row .g-d{font-family:'Space Mono',monospace;color:var(--acid);font-size:.62rem}
+@media(max-width:760px){.tm-body{grid-template-columns:1fr;text-align:center}.tm-body .tm-art{margin:0 auto}}
+
+/* SHARED WALL */
+.wall-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));border:1px solid rgba(199,205,212,.18);margin:1.5rem 0 2rem}
+.wall-stats .ws{padding:1.1rem 1rem;border-right:1px solid rgba(199,205,212,.18);text-align:center}
+.wall-stats .ws:last-child{border-right:none}
+.wall-stats .ws .v{font-family:'Pirata One',serif;font-size:2.2rem;color:var(--acid);line-height:1}
+.wall-stats .ws .k{font-size:.54rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-top:.3rem}
+.wall-filter{display:flex;gap:.4rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.wall-filter button{font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.4rem .7rem;border:1px solid rgba(199,205,212,.3);background:var(--void);color:var(--dim);cursor:pointer}
+.wall-filter button.on{background:var(--acid);color:var(--void);border-color:var(--acid)}
+.wall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1px;background:rgba(199,205,212,.18);border:1px solid rgba(199,205,212,.18)}
+.wc{background:var(--panel);position:relative;cursor:pointer;display:flex;flex-direction:column}
+.wc .wc-art{width:100%;aspect-ratio:1;background:var(--void);display:flex;align-items:center;justify-content:center;font-family:'Pirata One',serif;font-size:2rem;color:var(--dim);overflow:hidden}
+.wc .wc-art img{width:100%;height:100%;object-fit:cover;filter:contrast(1.05) saturate(.82)}
+.wc .wc-plays{position:absolute;top:.4rem;right:.4rem;font-size:.56rem;color:var(--void);background:var(--acid);padding:.1rem .35rem;font-weight:700;z-index:2}
+.wc .wc-plays.zero{background:var(--dim);color:var(--void)}
+.wc .wc-body{padding:.55rem .6rem .7rem;flex:1;display:flex;flex-direction:column}
+.wc .wc-title{font-family:'Anton',sans-serif;font-size:.74rem;text-transform:uppercase;color:#fff;line-height:1.15}
+.wc .wc-artist{color:var(--dim);font-size:.56rem;margin-top:.15rem;text-transform:uppercase;letter-spacing:.06em}
+.wc .wc-who{margin-top:auto;padding-top:.5rem;font-size:.54rem;color:var(--acid);letter-spacing:.1em;text-transform:uppercase}
+.wc:hover{background:#12151a}
+.wc:hover .wc-title{color:var(--acid)}
+.wc .wc-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;background:rgba(7,8,10,.55);color:var(--acid);font-size:1.6rem;transition:opacity .15s}
+.wc:hover .wc-play{opacity:1}
+.puton-row{display:grid;grid-template-columns:1fr auto auto;gap:1rem;align-items:baseline;padding:.55rem 0;border-bottom:1px solid rgba(199,205,212,.1);font-size:.72rem;cursor:pointer}
+.puton-row:hover{background:rgba(212,255,0,.04)}
+.puton-row .p-t{font-family:'Anton',sans-serif;text-transform:uppercase;color:var(--chrome);font-size:.88rem}
+.puton-row .p-t small{color:var(--dim);font-family:'Space Mono',monospace;font-size:.62rem;text-transform:none;letter-spacing:0}
+.puton-row .p-who{color:var(--acid);font-size:.62rem;letter-spacing:.1em}
+.puton-row .p-n{color:var(--dim);font-size:.6rem;font-family:'Space Mono',monospace}
+</style>
+</head>
+<body>
+<div class="rail rail-l">51.56°N 0.07°W · STOKE NEWINGTON · TRANSMISSION ONGOING</div>
+<div class="rail rail-r">ILSC·FM · CAT NO. ILSC-001 · PRESSED MMXXVI · SIDE A</div>
+<header>
+  <div class="wordmark"><span class="blk">ILSC·FM</span><span class="mono-xs">by Camera</span></div>
+  <nav>
+    <a href="#explore">Explorer</a><a href="#chart">All-Time 50</a><a href="#constel-sec">Constellation</a><a href="#eras">Eras</a>
+    <a href="#strata">Strata</a><a href="#rhythms">Rhythms</a><a href="#ilsc">The Group</a>
+  </nav>
+</header>
+<div id="explore">
+  <canvas id="galaxy" aria-label="Interactive map of 50 most-played tracks. Switch layouts, filter genres, tap a point to play."></canvas>
+  <div class="hero-copy">
+    <div class="mono-xs">DOC. 01 — 14 YEARS OF STREAMING HISTORY · COMPLETE &amp; UNEDITED</div>
+    <h1 class="blk">The Listening<br><span class="ghost">Field</span></h1>
+    <p class="hero-sub">50 most-played tracks since 2012 · size = play count · tap any point to play it · switch the layout below</p>
+  </div>
+  <div class="hero-stamp" id="heroStamp"></div>
+  <div class="explore-ui">
+    <div class="mode-toggle">
+      <button data-mode="strata" class="on">By genre</button>
+      <button data-mode="time">By year found</button>
+      <button data-mode="rank">By rank</button>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+</div>
+<div id="nowcard">
+  <div class="np-head"><span>▶ NOW PLAYING · SPOTIFY</span><button class="np-close" id="np-close">✕</button></div>
+  <iframe id="np-frame" src="" allow="encrypted-media" loading="lazy"></iframe>
+  <div class="np-meta" id="np-meta"></div>
+</div>
+<div id="tooltip">
+  <div class="tt-thumb"><div class="fallback" id="tt-fb"></div><img id="tt-img" src="" alt="" style="display:none"></div>
+  <div class="tt-rank" id="tt-rank"></div><div class="tt-title" id="tt-title"></div><div class="tt-artist" id="tt-artist"></div><div class="tt-plays" id="tt-plays"></div>
+</div>
+<div class="strip" aria-hidden="true"><div class="strip-inner" id="strip1"></div></div>
+
+<section id="chart">
+  <div class="sec-num">I</div>
+  <div class="sec-head"><div class="mono-xs">DOC. 02 — THE RECORD</div><h2>All-Time 50</h2></div>
+  <p class="sec-intro" id="chartIntro"></p>
+  <div class="statband" id="statband"></div>
+  <div class="podium" id="podium"></div>
+  <div id="chart-rows"></div>
+</section>
+
+
+<section id="constel-sec">
+  <div class="sec-num">II</div>
+  <div class="sec-head"><div class="mono-xs">DOC. 03 — THE CONNECTION GRAPH</div><h2>Constellation</h2></div>
+  <p class="sec-intro">Not who I play most — who I play <em>together</em>. Every line is two artists that keep turning up in the same listening session across 9,334 sessions. Drag the field around; hover a node to light up its neighbourhood. Aphex Twin and Boards of Canada share 433 sessions — the tightest bond in the whole account.</p>
+  <div id="constel">
+    <canvas id="cgraph"></canvas>
+    <div class="c-legend">NODE = ARTIST · SIZE = <b>HOURS</b><br>LINE = <b>SHARED SESSIONS</b> · THICKER = MORE<br>COLOUR = STRATUM</div>
+    <div class="c-hint">DRAG TO EXPLORE<br>HOVER TO ISOLATE</div>
+    <div id="cinfo"><div class="ci-name" id="ci-name"></div><div class="ci-meta" id="ci-meta"></div><div class="ci-links" id="ci-links"></div></div>
+  </div>
+</section>
+
+<section id="eras">
+  <div class="sec-num">III</div>
+  <div class="sec-head"><div class="mono-xs">DOC. 04 — THE TIMELINE</div><h2>Eras</h2></div>
+  <p class="sec-intro">Hours streamed per year, and the artist who ruled each one. The account opens in 2012 on Nicolas Jaar; Aphex Twin then takes eight of the next fourteen years outright.</p>
+  <div class="timeline" id="timeline"></div>
+  <div style="margin-top:2.5rem" id="eratable"></div>
+  <div class="tm">
+    <div class="tm-years" id="tmYears"></div>
+    <div class="tm-body">
+      <div class="tm-art" id="tmArt"></div>
+      <div><div class="tm-yr" id="tmYr" style="display:none"></div><div class="tm-track" id="tmTrack"></div><div class="tm-artist" id="tmArtist"></div></div>
+      <button class="tm-play" id="tmPlay">▶ Play the year</button>
+    </div>
+  </div>
+  <h3 style="font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--acid);margin:2.5rem 0 1.1rem;border-bottom:1px solid rgba(199,205,212,.18);padding-bottom:.5rem">First contact · the gateway track for each artist</h3>
+  <div id="gate"></div>
+
+</section>
+
+<section id="strata">
+  <div class="sec-num">IV</div>
+  <div class="sec-head"><div class="mono-xs">DOC. 05 — ANALYSIS</div><h2>Strata</h2></div>
+  <p class="sec-intro">All-time top artists by hours, and the shape of a listening day across 14 years.</p>
+  <div class="stats-grid">
+    <div class="stat-block"><h3>Top artists · by hours</h3><div id="artists"></div></div>
+    <div class="stat-block"><h3>The listening day · hours by clock hour</h3><div class="clock" id="clock"></div>
+      <div class="clock-cap"><span>00:00</span><span>PEAK 10:00</span><span>23:00</span></div></div>
+  </div>
+</section>
+
+<section id="rhythms">
+  <div class="sec-num">V</div>
+  <div class="sec-head"><div class="mono-xs">DOC. 06 — PATTERNS</div><h2>Rhythms</h2></div>
+  <p class="sec-intro">The habit beneath the taste: when the listening happens, how much is new, and the days it never stopped.</p>
+  <div class="two-col">
+    <div class="stat-block"><h3>By weekday · a working listener</h3><div id="weekday"></div>
+      <h3 style="margin-top:2rem">Longest listening days</h3><div id="marathon"></div></div>
+    <div class="stat-block"><h3>New tracks discovered per year</h3><div id="discovery"></div></div>
+  </div>
+  <div class="vault-card">
+    <img src="https://image-cdn-fa.spotifycdn.com/image/ab67706c0000da8481bbed440b60d9f1aedb4aaa" alt="Playlist cover" onerror="this.style.opacity=.15">
+    <div>
+      <h3>Barry's Blockrockin' Beats</h3>
+      <div class="mono-xs">THE VAULT · ONE PLAYLIST · A–Z BY ARTIST</div>
+      <div class="big-num">4,063</div>
+      <div class="mono-xs">TRACKS — BUT THE ACCOUNT BEHIND IT HAS PLAYED 39,000 UNIQUE SONGS ACROSS 10,516 ARTISTS</div>
+      <a href="https://open.spotify.com/playlist/7pg3vaaz1oVNIziVgJ5ySe" target="_blank" rel="noopener" style="font-size:.66rem;letter-spacing:.16em;display:inline-block;margin-top:.8rem">[ OPEN THE VAULT ON SPOTIFY ]</a>
+    </div>
+  </div>
+</section>
+
+<div class="strip rev" aria-hidden="true"><div class="strip-inner" id="strip2"></div></div>
+
+<section id="ilsc">
+  <div class="ilsc-hero">
+    <div class="mono-xs">DOC. 07 — GROUP TRANSMISSION LOG · EST. 13.08.2015 · EXPORT 2023–2026</div>
+    <div class="blk-title">"I'm like,<br>so cultural"</div>
+    <div class="sub">Twelve correspondents · one WhatsApp thread · every link, gig &amp; banger logged</div>
+  </div>
+  <div class="statband" style="border-left:none;border-right:none">
+    <div class="sb"><div class="v">2,177</div><div class="k">Messages</div></div>
+    <div class="sb"><div class="v">12</div><div class="k">Members</div></div>
+    <div class="sb"><div class="v">94</div><div class="k">Spotify links</div></div>
+    <div class="sb"><div class="v">320</div><div class="k">Media dropped</div></div>
+    <div class="sb"><div class="v">11:00</div><div class="k">Peak posting hour</div></div>
+  </div>
+  <div class="ilsc-inner">
+    <div class="ilsc-grid">
+      <div class="stat-block">
+        <h3>Activity · Oct 2023 → Jul 2026</h3>
+        <div class="tl" id="tl"></div>
+        <div class="tl-cap"><span>OCT 23</span><span style="color:var(--blood)">AUG 24 — THE SURGE: 249</span><span>JUL 26</span></div>
+      </div>
+      <div class="stat-block"><h3>Correspondents · by volume</h3><div id="members"></div></div>
+    </div>
+    <div class="stat-block" style="margin-bottom:1rem"><h3>Selected transmissions · sic throughout</h3></div>
+    <div class="tx-grid" id="txgrid"></div>
+    <h3 style="font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--acid);margin:1rem 0 .4rem;border-bottom:1px solid rgba(199,205,212,.18);padding-bottom:.5rem">The shared wall · 67 tracks the group posted · tap to play</h3>
+    <p class="sec-intro" style="margin:1rem 0 0">Every Spotify track dropped in the thread — and whether it made it into my own rotation. The overlap is the point: the group isn't shouting into the void.</p>
+    <div class="wall-stats" id="wallStats"></div>
+    <div class="wall-filter" id="wallFilter">
+      <button data-f="all" class="on">All 67</button>
+      <button data-f="yours">In my rotation (54)</button>
+      <button data-f="puton">They put me on (11)</button>
+    </div>
+    <div class="wall-grid" id="wallGrid"></div>
+    <h3 style="font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--acid);margin:2.5rem 0 1.1rem;border-bottom:1px solid rgba(199,205,212,.18);padding-bottom:.5rem">They put me on · shared before I'd ever played it</h3>
+    <div id="putonList"></div>
+  </div>
+</section>
+
+<footer>
+  <div><b>ILSC·FM</b> · A CAMERA PRODUCTION · BUILT FROM 206,925 STREAMS</div>
+  <div>RECORDED LIVE IN STOKE NEWINGTON · <b>MMXXVI</b></div>
+</footer>
+
+<script>
+const DATA={"TOP":[{"id":"4vLYewWIvqHfKtJDk8c8tq","plays":155,"hours":20.5,"title":"So What","artist":"Miles Davis","s":"blue","first":"2013-01"},{"id":"2dqLO6897sZKnAAXuOcdGW","plays":152,"hours":7.0,"title":"Altibzz","artist":"Autechre","s":"machine","first":"2012-11"},{"id":"0kMDFI2uqA16c8rWzXWlAU","plays":143,"hours":9.9,"title":"The Jam","artist":"A Tribe Called Quest","s":"boombap","first":"2013-06"},{"id":"1vgSaC0BPlL6LEm4Xsx59J","plays":143,"hours":9.4,"title":"An Ending (Ascent)","artist":"Brian Eno","s":"machine","first":"2013-06"},{"id":"2fl4Z6FRDXutSBKvKHSJcV","plays":136,"hours":13.4,"title":"Fantastic Man","artist":"William Onyeabor","s":"groove","first":"2014-04"},{"id":"4Y2W4zKa3q72ztbkA0r8Va","plays":128,"hours":10.3,"title":"Dayvan Cowboy","artist":"Boards of Canada","s":"machine","first":"2013-10"},{"id":"5d3qZ4xZv0inQK292Mmnhh","plays":121,"hours":7.9,"title":"Carbonated","artist":"Mount Kimbie","s":"machine","first":"2014-01"},{"id":"5ic68M3jaJTEUcEIh5PcqX","plays":120,"hours":4.5,"title":"Grown Up","artist":"Danny Brown","s":"boombap","first":"2013-09"},{"id":"2MmI2fOFAYnOJcMyWkn1js","plays":118,"hours":7.5,"title":"PAPAT4 [155][pineal mix]","artist":"Aphex Twin","s":"machine","first":"2014-09"},{"id":"4z5L0qDduw3w1apQ4Qa6KV","plays":112,"hours":4.2,"title":"Alphabet Aerobics","artist":"Blackalicious","s":"boombap","first":"2013-05"},{"id":"4OO2lavE7yz5Ane6fEYXp3","plays":107,"hours":11.2,"title":"Everything You Do Is A Balloon","artist":"Boards of Canada","s":"machine","first":"2012-11"},{"id":"4JCmpKszRvku5euErqBIPO","plays":102,"hours":7.3,"title":"Da Feelin","artist":"Nightmares On Wax","s":"groove","first":"2012-11"},{"id":"4yFU6FhkuzsAiv5UIjL0YN","plays":100,"hours":9.0,"title":"Glassworks: II. Floe","artist":"Philip Glass","s":"blue","first":"2013-03"},{"id":"00wT7HAtqZ2BnemrR34vbO","plays":98,"hours":5.2,"title":"4","artist":"Aphex Twin","s":"machine","first":"2012-11"},{"id":"1UJNbgfTzG1gZZTWFJdMf1","plays":98,"hours":4.3,"title":"Superfast Jellyfish","artist":"Gorillaz","s":"boombap","first":"2014-02"},{"id":"2MZSXhq4XDJWu6coGoXX1V","plays":98,"hours":3.3,"title":"Avril 14th","artist":"Aphex Twin","s":"machine","first":"2012-11"},{"id":"3bCmDqflFBHijgJfvtqev5","plays":97,"hours":17.3,"title":"1/1","artist":"Brian Eno","s":"machine","first":"2013-01"},{"id":"2pLBnncte8HnrPKM2D6ag5","plays":95,"hours":8.4,"title":"Slowly","artist":"Amon Tobin","s":"machine","first":"2014-04"},{"id":"5fpizYGbi5IQoEraj6FP0R","plays":93,"hours":5.2,"title":"Intergalactic","artist":"Beastie Boys","s":"boombap","first":"2012-12"},{"id":"5IExVHUiRccCWyJ4imu9qD","plays":92,"hours":6.3,"title":"#20","artist":"Aphex Twin","s":"machine","first":"2017-10"},{"id":"3ZzhV6JIDKWvWR7wiKWD0C","plays":91,"hours":9.2,"title":"La femme d'argent","artist":"Air","s":"machine","first":"2013-01"},{"id":"2bue03iRcaiRGEvhn0FU8K","plays":89,"hours":5.7,"title":"Thank You","artist":"Busta Rhymes","s":"boombap","first":"2013-12"},{"id":"2bSF5Qs8IQE9RRaZIef7mO","plays":88,"hours":4.1,"title":"High","artist":"Freddie Gibbs","s":"boombap","first":"2015-09"},{"id":"119c93MHjrDLJTApCVGpvx","plays":86,"hours":5.3,"title":"C.R.E.A.M. (Cash Rules Everything Around Me)","artist":"Wu-Tang Clan","s":"boombap","first":"2012-12"},{"id":"7o2AeQZzfCERsRmOM86EcB","plays":86,"hours":5.8,"title":"Xtal","artist":"Aphex Twin","s":"machine","first":"2016-07"},{"id":"6t3GC2nW76Lqx3kAwZixUi","plays":85,"hours":6.4,"title":"Made To Stray","artist":"Mount Kimbie","s":"machine","first":"2013-07"},{"id":"0msneWUDfYKAGrifwEDhtl","plays":85,"hours":5.3,"title":"San Francisco Knights","artist":"People Under The Stairs","s":"boombap","first":"2013-05"},{"id":"4nWeOAZClYD7WGlKz9JjnE","plays":82,"hours":7.8,"title":"Glassworks: I. Opening","artist":"Philip Glass","s":"blue","first":"2013-03"},{"id":"40UlFC0dIxv7lAEJaPZLnm","plays":81,"hours":6.1,"title":"Alone in Kyoto","artist":"Air","s":"machine","first":"2012-11"},{"id":"5f45hqKKBRkkWAvtS2nmGx","plays":81,"hours":3.8,"title":"Train To Skaville (Original Version)","artist":"The Ethiopians","s":"roots","first":"2015-04"},{"id":"0pg2VKzTsBdbxPzcOkReY2","plays":79,"hours":5.1,"title":"A grand love theme","artist":"Kid Loco","s":"groove","first":"2014-03"},{"id":"4GtN7yHlsvQanJfp2Qzw1A","plays":79,"hours":3.4,"title":"Zodiac Shit","artist":"Flying Lotus","s":"machine","first":"2012-11"},{"id":"3AhXZa8sUQht0UEdBJgpGc","plays":79,"hours":6.6,"title":"Like a Rolling Stone","artist":"Bob Dylan","s":"roots","first":"2013-01"},{"id":"0gOxMzheaAPk6cLWBIk5fc","plays":77,"hours":4.9,"title":"The Blues (It Began in Africa)","artist":"Romare","s":"groove","first":"2014-12"},{"id":"0uMUvbkTdjBNZ5UuHZ5PIj","plays":77,"hours":3.7,"title":"IV. Sweatpants","artist":"Childish Gambino","s":"boombap","first":"2014-01"},{"id":"7KRQoq9GeWeCm0ZAXg5XMb","plays":76,"hours":6.1,"title":"Ageispolis","artist":"Aphex Twin","s":"machine","first":"2016-06"},{"id":"2b3KgzISdjZVNPJJ1945nw","plays":76,"hours":3.4,"title":"Rigamortus","artist":"Kendrick Lamar","s":"boombap","first":"2016-06"},{"id":"2hfkiGEyh2Sx5sl6JII6sp","plays":76,"hours":4.7,"title":"Rhymes Like Dimes","artist":"MF DOOM","s":"boombap","first":"2016-05"},{"id":"2MUsTTGSu6IGcfCLHdtZfM","plays":75,"hours":2.8,"title":"Hit Or Miss","artist":"Odetta","s":"roots","first":"2013-04"},{"id":"0seN7RvbiVzJTSK9LXWShn","plays":75,"hours":4.4,"title":"Crushin'","artist":"J Dilla","s":"boombap","first":"2014-03"},{"id":"6Ozh9Ok6h4Oi1wUSLtBseN","plays":74,"hours":3.1,"title":"BOP","artist":"DaBaby","s":"boombap","first":"2019-11"},{"id":"2okhtzYxqQdvCpIkASC97y","plays":73,"hours":5.4,"title":"minipops 67 [120.2][source field mix]","artist":"Aphex Twin","s":"machine","first":"2014-09"},{"id":"4KROoGIaPaR1pBHPnR3bwC","plays":73,"hours":2.4,"title":"Pink Moon","artist":"Nick Drake","s":"roots","first":"2022-05"},{"id":"3ABG1UQTk0eLYUAeWkmfMi","plays":72,"hours":3.1,"title":"Shimmy Shimmy Ya","artist":"Ol' Dirty Bastard","s":"boombap","first":"2015-01"},{"id":"65rRB2mspD309xE6YimZTl","plays":71,"hours":4.8,"title":"Clique","artist":"Kanye West","s":"boombap","first":"2012-12"},{"id":"515ka3A61zIelXCIRdfFIe","plays":71,"hours":4.2,"title":"Sleep Sound","artist":"Jamie xx","s":"machine","first":"2015-06"},{"id":"12OkZyDWNBLUqoReoseGrc","plays":70,"hours":4.2,"title":"Rhymes Like Dimes","artist":"MF DOOM","s":"boombap","first":"2017-11"},{"id":"3Ti0GdlrotgwsAVBBugv0I","plays":69,"hours":4.5,"title":"Can I Kick It?","artist":"A Tribe Called Quest","s":"boombap","first":"2015-11"},{"id":"0xHajFt9da19XukzC2z1Sk","plays":69,"hours":3.5,"title":"Attak","artist":"Rustie","s":"machine","first":"2014-08"},{"id":"0eEXcw3JLVXcRxYrVYMy68","plays":68,"hours":4.1,"title":"Electric Relaxation","artist":"A Tribe Called Quest","s":"boombap","first":"2012-12"}],"YEARS":[["2012",79],["2013",692],["2014",760],["2015",758],["2016",607],["2017",583],["2018",490],["2019",604],["2020",391],["2021",196],["2022",271],["2023",515],["2024",474],["2025",443],["2026",212]],"ERAS":[["2012","Nicolas Jaar",6],["2013","Ludovico Einaudi",18],["2014","Aphex Twin",24],["2015","Aphex Twin",23],["2016","The Beatles",12],["2017","Aphex Twin",24],["2018","Brian Eno",15],["2019","Aphex Twin",21],["2020","Brian Eno",26],["2021","MF DOOM",7],["2022","Joy Orbison",6],["2023","Aphex Twin",9],["2024","Aphex Twin",15],["2025","Aphex Twin",16],["2026","Aphex Twin",5]],"ARTISTS":[["Aphex Twin",185,2679],["Brian Eno",85,891],["Boards of Canada",82,1243],["Radiohead",70,1117],["Philip Glass",68,737],["Miles Davis",61,642],["Floating Points",55,662],["Mount Kimbie",54,832],["Air",54,797],["Nightmares On Wax",48,629],["MF DOOM",45,865],["Nirvana",43,823],["Quantic",43,603],["The Beatles",41,905],["Kendrick Lamar",41,773],["Bonobo",40,580],["A Tribe Called Quest",40,636],["Beastie Boys",40,799],["William Onyeabor",37,388],["Jamie xx",34,524]],"CLOCK":[48,37,41,32,26,33,56,318,625,667,697,622,473,449,511,489,496,454,335,222,170,129,86,59],"ALBUMS":[["Selected Ambient Works Volume II","Aphex Twin",40],["Glass: Le ma\u00eetre du minimaliste","Philip Glass",40],["Kind Of Blue (Legacy Edition)","Miles Davis",39],["World Psychedelic Classics 5: Who Is William Onyeabor?","William Onyeabor",35],["Selected Ambient Works 85-92","Aphex Twin",34],["Syro","Aphex Twin",31],["Kid A","Radiohead",27],["Enter The Wu-Tang (36 Chambers) [Expanded Edition]","Wu-Tang Clan",23],["Moon Safari","Air",22],["Space Is Only Noise","Nicolas Jaar",21],["Ambient 1: Music For Airports","Brian Eno",21],["In Colour","Jamie xx",20]],"STATS":{"total_streams":206925,"total_hours":7074,"total_days":295,"unique_artists":10516,"unique_tracks":39000,"first":"2012-11-13","last":"2026-07-18"},"DISCOVERY":[["2012",789],["2013",4306],["2014",3831],["2015",3388],["2016",2050],["2017",2840],["2018",3095],["2019",3835],["2020",2120],["2021",1446],["2022",2426],["2023",3231],["2024",2596],["2025",2055],["2026",992]],"MARATHON":[["2017-10-14",20.1],["2017-06-18",19.7],["2020-05-16",18.8]],"WEEKDAY":[1176,1284,1307,1190,981,564,573],"MONTH":[683,570,534,654,602,546,608,536,574,639,608,521],"GRAPH":{"nodes":[{"id":0,"name":"Aphex Twin","h":185,"p":2679,"s":"machine"},{"id":1,"name":"Brian Eno","h":85,"p":891,"s":"machine"},{"id":2,"name":"Boards of Canada","h":82,"p":1243,"s":"machine"},{"id":3,"name":"Radiohead","h":70,"p":1117,"s":"songbook"},{"id":4,"name":"Philip Glass","h":68,"p":737,"s":"blue"},{"id":5,"name":"Miles Davis","h":61,"p":642,"s":"blue"},{"id":6,"name":"Floating Points","h":55,"p":662,"s":"machine"},{"id":7,"name":"Mount Kimbie","h":54,"p":832,"s":"machine"},{"id":8,"name":"Air","h":54,"p":797,"s":"machine"},{"id":9,"name":"Nightmares On Wax","h":48,"p":629,"s":"groove"},{"id":10,"name":"MF DOOM","h":45,"p":865,"s":"boombap"},{"id":11,"name":"Nirvana","h":43,"p":823,"s":"songbook"},{"id":12,"name":"Quantic","h":43,"p":603,"s":"groove"},{"id":13,"name":"The Beatles","h":41,"p":905,"s":"songbook"},{"id":14,"name":"Kendrick Lamar","h":41,"p":773,"s":"boombap"},{"id":15,"name":"Bonobo","h":40,"p":580,"s":"machine"},{"id":16,"name":"A Tribe Called Quest","h":40,"p":636,"s":"boombap"},{"id":17,"name":"Beastie Boys","h":40,"p":799,"s":"boombap"},{"id":18,"name":"William Onyeabor","h":37,"p":388,"s":"groove"},{"id":19,"name":"Jamie xx","h":34,"p":524,"s":"machine"},{"id":20,"name":"Nicolas Jaar","h":34,"p":490,"s":"machine"},{"id":21,"name":"Wu-Tang Clan","h":34,"p":586,"s":"boombap"},{"id":22,"name":"Romare","h":32,"p":467,"s":"groove"},{"id":23,"name":"Four Tet","h":31,"p":448,"s":"machine"},{"id":24,"name":"The Stone Roses","h":29,"p":424,"s":"songbook"},{"id":25,"name":"DJ Shadow","h":29,"p":438,"s":"machine"},{"id":26,"name":"David Bowie","h":26,"p":440,"s":"songbook"},{"id":27,"name":"The Rolling Stones","h":26,"p":444,"s":"songbook"},{"id":28,"name":"The Beta Band","h":26,"p":315,"s":"songbook"},{"id":29,"name":"Autechre","h":25,"p":426,"s":"machine"},{"id":30,"name":"The Pharcyde","h":25,"p":396,"s":"songbook"},{"id":31,"name":"The Strokes","h":24,"p":504,"s":"songbook"}],"edges":[[0,2,433],[0,3,373],[8,0,316],[0,7,279],[8,3,261],[0,6,258],[0,11,256],[0,1,249],[0,25,245],[0,17,244],[26,3,234],[0,9,234],[11,3,233],[0,26,223],[0,24,218],[0,15,216],[2,3,215],[3,24,212],[0,20,207],[0,29,204],[17,3,204],[16,0,204],[8,2,199],[25,3,197],[3,31,193],[20,3,192],[8,25,185],[0,28,182],[0,31,181],[8,26,180],[0,19,176],[0,12,170],[0,23,167],[2,7,166],[0,21,164],[26,11,164],[8,20,162],[0,22,162],[0,14,162],[8,17,158],[8,11,158],[17,11,157],[0,18,157],[7,3,155],[2,11,154],[11,24,154],[15,3,154],[2,25,153],[8,15,153],[8,24,153],[2,6,152],[26,24,150],[3,27,148],[0,10,148],[16,3,147],[17,26,147],[3,28,146],[25,24,146],[0,27,144],[0,4,143],[20,11,142],[2,1,142],[17,24,141],[2,15,140],[17,2,138],[3,21,138],[25,20,137],[16,2,134],[25,26,133],[26,27,132],[1,3,131],[2,24,131],[17,25,130],[2,9,130],[8,31,129],[17,28,128],[29,2,127],[25,11,126],[2,20,125],[16,8,125],[2,26,125],[26,20,123],[11,31,122],[17,20,122],[6,3,122],[0,13,122],[15,25,121],[8,9,121],[8,7,121],[7,9,121],[0,5,120],[15,11,119],[2,31,118],[11,28,118],[16,17,116],[20,24,115],[16,10,113],[9,3,113],[26,21,112],[0,30,112],[6,19,112],[14,10,112],[26,31,111],[8,27,111],[15,26,111],[15,24,111],[25,7,111],[8,28,110],[8,21,110],[17,15,110],[15,7,110],[16,11,109],[26,28,109],[25,27,108],[26,7,108],[7,24,107],[6,23,107],[6,22,107],[27,24,106],[3,13,106],[14,3,106],[16,30,105],[8,1,105],[7,11,104],[7,20,104],[17,31,103],[4,3,103],[24,31,103],[6,7,103],[16,7,102],[2,23,101],[2,21,101],[2,28,101],[11,21,100],[11,27,100],[17,7,100],[25,21,99],[16,21,99],[15,20,99],[23,3,99],[25,31,98],[15,9,98],[9,12,97],[28,24,96],[20,28,94],[16,24,94],[9,11,94],[23,7,94],[16,25,93],[7,22,93],[8,6,92],[2,19,92],[16,20,91],[20,27,91],[3,30,91],[7,18,91],[19,3,90],[9,18,90],[10,3,90],[25,28,89],[17,21,89],[6,11,89],[1,11,88],[3,22,88],[14,13,88],[1,7,87],[16,9,87],[3,18,87],[29,6,87],[17,27,86],[2,22,86],[6,9,86],[20,21,85],[12,3,85],[8,12,85],[2,12,85],[24,21,84],[16,26,84],[10,30,84],[2,14,84],[27,31,83],[15,31,83],[19,9,82],[26,9,82],[2,27,81],[25,9,81],[2,18,80],[9,24,79],[7,12,79],[28,31,78],[1,26,77],[20,31,77],[15,1,77],[2,4,76],[17,1,76],[15,12,76],[19,7,76],[16,1,75],[1,25,75],[1,24,75],[7,21,75],[11,4,74],[17,4,74],[1,28,74],[1,31,74],[15,27,74],[16,15,74],[19,11,74],[1,6,74],[9,22,74],[15,23,73],[15,21,73],[7,31,73],[19,22,73],[25,12,72],[5,3,71],[15,6,71],[16,14,71],[2,10,71],[28,27,70],[8,29,70],[8,23,70],[8,30,70],[29,17,70],[29,7,70],[8,19,70],[2,13,70],[17,14,70],[8,18,69],[11,22,69],[14,7,69],[8,4,68],[16,31,68],[7,27,68],[6,24,68],[17,9,68],[26,22,68],[16,22,68],[11,13,68],[8,10,68],[17,10,68],[10,13,68],[16,27,67],[15,28,67],[25,6,67],[16,28,66],[8,5,66],[17,6,66],[26,12,66],[12,18,66],[10,21,66],[16,12,65],[20,9,65],[8,14,65],[31,21,64],[2,30,64],[16,6,64],[29,3,64],[28,21,63],[11,12,63],[16,18,63],[8,13,63],[26,14,63],[1,14,63],[26,4,62],[1,23,62],[7,28,62],[6,20,62],[29,1,62],[24,18,62],[8,22,62],[10,22,62],[10,11,62],[27,21,61],[25,30,61],[12,24,61],[26,23,61],[26,18,61],[11,18,61],[1,10,61],[6,10,61],[17,5,60],[6,30,60],[23,11,59],[16,4,59],[2,5,59],[10,31,59],[17,23,58],[23,22,58],[14,11,58],[17,30,57],[1,9,57],[22,31,57],[29,25,56],[23,9,56],[5,31,56],[4,24,56],[26,6,56],[6,31,56],[12,21,56],[16,23,56],[10,7,56],[1,5,55],[20,12,55],[7,30,55],[14,22,55],[26,13,55],[25,23,54],[30,21,54],[15,4,54],[7,4,54],[29,15,54],[16,19,54],[15,19,54],[29,19,54],[14,31,54],[15,22,53],[6,12,53],[25,22,53],[29,11,53],[4,28,52],[1,20,52],[11,30,52],[23,19,52],[29,10,52],[23,13,52],[15,13,52],[1,21,51],[26,19,51],[19,24,51],[23,24,51],[9,21,51],[20,18,51],[20,22,51],[29,23,51],[1,22,51],[14,9,51],[1,13,51],[25,5,50],[1,4,50],[5,7,50],[25,18,50],[25,10,50],[25,4,49],[12,31,49],[9,31,49],[15,18,49],[19,20,49],[12,22,49],[6,14,49],[23,14,49],[15,10,49],[23,10,49],[5,24,48],[25,19,48],[6,28,48],[17,19,48],[17,22,48],[22,21,48],[29,22,48],[7,13,48],[25,13,48],[13,21,48],[16,13,48],[26,5,47],[6,21,47],[9,4,47],[23,12,47],[9,27,47],[17,13,47],[25,14,47],[10,5,47],[20,4,46],[15,5,46],[29,24,46],[29,9,46],[12,28,46],[18,21,46],[22,28,46],[13,31,46],[26,30,45],[17,12,45],[1,19,45],[13,24,45],[5,11,44],[15,30,44],[9,30,44],[22,24,44],[29,14,44],[30,27,43],[19,14,43],[12,13,43],[6,13,43],[4,21,42],[16,5,42],[19,4,42],[6,27,42],[29,26,42],[6,5,42],[23,20,42],[29,13,42],[19,10,42],[30,31,41],[20,30,41],[23,30,41],[4,18,41],[6,18,41],[26,10,41],[9,13,41],[1,27,40],[19,27,40],[17,18,40],[19,18,40],[19,30,40],[14,21,40]]},"YEARTOP":[["2012","Xtal","Aphex Twin",23,"5ULcHWDMA3GKd9Ib4pUSh6"],["2013","Corale","Ludovico Einaudi",37,"4bSsLYbyCEisguAfwVlph7"],["2014","Fantastic Man","William Onyeabor",70,"2fl4Z6FRDXutSBKvKHSJcV"],["2015","PAPAT4 [155][pineal mix]","Aphex Twin",78,"2MmI2fOFAYnOJcMyWkn1js"],["2016","Polythene Pam","The Beatles",62,"6AOQOmjAsINEjkz6OurncN"],["2017","HUMBLE.","Kendrick Lamar",37,"7ujx3NYtwO2LkmKGz59mXp"],["2018","Yes Baby Yes","Mo' Horizons",36,"2NxIOFFrMxjeiPogqIkno1"],["2019","#20","Aphex Twin",46,"5IExVHUiRccCWyJ4imu9qD"],["2020","Five Light Paintings","Brian Eno",52,"1TbvKykjIsIzR1105X5IPq"],["2021","Beat Box 3","SpotemGottem",32,"6toQdWWc4noiOk3Eo5mVDS"],["2022","Nail Tech","Jack Harlow",39,"62Yo3FDddWY8ydu6PW2wyz"],["2023","Spike Lee","Key Glock",31,"1584BGfWzDiIu2OdSd7zhQ"],["2024","By the Grace of God, I Am","Erni Clark",29,"5VEqTYQAtjXhYBCXycsjf1"],["2025","An Ending (Ascent)","Brian Eno",31,"1vgSaC0BPlL6LEm4Xsx59J"],["2026","4 Raws","EsDeeKid",20,"554qQSs9lpRVq6TlaaiIKT"]],"GATE":[["Aphex Twin","2012-11-13","Windowlicker","3aub1GpyKYRd1cVN54bnw6"],["Brian Eno","2012-12-05","1/1","3epGZLT6uC72MYZ5S7DwGt"],["Boards of Canada","2012-11-13","Roygbiv","3uS2P07FDjhm1GlXKWKilM"],["Radiohead","2012-11-15","Everything in Its Right Place","31DVVa40JpTudyGDNC1ROW"],["Philip Glass","2012-12-01","Pruit Igoe","28BBVNpO2pUMneDBggZ2yl"],["Miles Davis","2013-01-20","So What","4vLYewWIvqHfKtJDk8c8tq"],["Floating Points","2013-08-05","Obfuse","1bJ3LlXVyt6NAmwgeuoXLZ"],["Mount Kimbie","2013-07-02","Serged","1txsZMvMLiUlHRHRdABDyo"],["Air","2012-11-15","Mer du Japon","0WpbxUqmy5zCcVAW1nm9H1"],["Nightmares On Wax","2012-11-29","Da Feelin","4JCmpKszRvku5euErqBIPO"]],"WALL":[{"id":"7y5zXpTN4J7K0PngQYa655","title":"Tearz","artist":"Wu-Tang Clan","who":"B.S. \u2726","date":"09.09.25","plays":59,"yours":true},{"id":"4Wrd7TpAgRmlUtcbpJCW3T","title":"flight fm","artist":"Joy Orbison","who":"B.S. \u2726","date":"24.01.24","plays":37,"yours":true},{"id":"0bhnFakmRioZbuQcmhVwoH","title":"The Spark","artist":"Kabin Crew","who":"B.S. \u2726","date":"25.06.24","plays":31,"yours":true},{"id":"1jzXIejG0RG1031dkU9jLw","title":"2005 Toyota Corolla","artist":"2003 Toyota Corolla","who":"B.S. \u2726","date":"31.05.24","plays":29,"yours":true},{"id":"1lbNgoJ5iMrMluCyhI4OQP","title":"Victory Lap","artist":"Fred again..","who":"B.S. \u2726","date":"23.06.25","plays":26,"yours":true},{"id":"7FzPNwiNWjttQvavUtZv2g","title":"Candyman","artist":"Muireann Bradley","who":"B.S. \u2726","date":"02.01.24","plays":25,"yours":true},{"id":"77DRzu7ERs0TX3roZcre7Q","title":"euphoria","artist":"Kendrick Lamar","who":"B.S. \u2726","date":"03.05.24","plays":24,"yours":true},{"id":"0rPc2m5HUqa1g8npvSS6kl","title":"Thoughts in My Mind","artist":"Donnie & Joe Emerson","who":"B.S. \u2726","date":"29.10.24","plays":22,"yours":true},{"id":"1lbjDy6IIerHFGZWKG0hno","title":"I swear, I Really Wanted To Make A \"Rap\" Album\u2026","artist":"Andr\u00e9 3000","who":"B.S. \u2726","date":"01.12.23","plays":20,"yours":true},{"id":"2aOG6jVZnTqZwEhjGTcFMM","title":"Swamp Bitches","artist":"Doechii","who":"B.S. \u2726","date":"23.02.26","plays":20,"yours":true},{"id":"3eh51r6rFWAlGQRlHx9QnQ","title":"Push Ups","artist":"Drake","who":"B.S. \u2726","date":"03.05.24","plays":17,"yours":true},{"id":"1IXa70EPedlpafPL7Ood2z","title":"After Laughter (Comes Tears)","artist":"Wendy Rene","who":"M.B.","date":"09.09.25","plays":15,"yours":true},{"id":"4vziJcnB2Qyi9o4nIRUeN7","title":"Now And Then","artist":"The Beatles","who":"B.S. \u2726","date":"02.11.23","plays":14,"yours":true},{"id":"370kWqwpgIWeR23yallOwf","title":"I Don't Want To Ride Your Aul One Anymore","artist":"The Deadlians","who":"B.S. \u2726","date":"19.04.26","plays":14,"yours":true},{"id":"3UDa3HRIwS4scBYom5K0zl","title":"Wave Of Mutilation - UK Surf","artist":"Pixies","who":"M.M.","date":"23.11.25","plays":13,"yours":true},{"id":"3Mn22PKkfTR2CjaRt4ziNj","title":"Friend Of A Friend","artist":"The Smile","who":"N.F.","date":"19.01.24","plays":11,"yours":true},{"id":"0fD7KBtQgPR1YCtuPAsyZJ","title":"PREACHER MAN","artist":"Kanye West","who":"B.S. \u2726","date":"02.04.26","plays":10,"yours":true},{"id":"1BLXxFPDL2BT37nHKD7KrA","title":"Pata Pata","artist":"Miriam Makeba","who":"J.O'R.","date":"02.07.24","plays":10,"yours":true},{"id":"3GCMoKi9KDq7UXmsClqfIQ","title":"Inglan Is A Bitch","artist":"Linton Kwesi Johnson","who":"B.S. \u2726","date":"11.03.24","plays":10,"yours":true},{"id":"6g6DnHs3W4U6qMERbKwpDd","title":"Spike Island","artist":"Pulp","who":"B.S. \u2726","date":"16.04.25","plays":9,"yours":true},{"id":"1WaiCFnNlnpy6NFf3Ga00R","title":"Woman","artist":"Barry Can't Swim","who":"M.M.","date":"02.11.23","plays":8,"yours":true},{"id":"6HNRHvqwjiQc0deescr4x6","title":"If I Was A Painter","artist":"Lisa O'Neill","who":"M.M.","date":"11.03.24","plays":7,"yours":true},{"id":"1aMJTyCRfxfp8luej4rjAC","title":"Spinning Away","artist":"Brian Eno","who":"T.A.","date":"18.03.24","plays":7,"yours":true},{"id":"6eVmsqBPtKFpxDRVDtcsKy","title":"Metal Mouth","artist":"T0MT0M","who":"T.","date":"27.11.24","plays":7,"yours":true},{"id":"56hg7GJ2DzMBrMZHKtE4UW","title":"Los Amantes","artist":"Mecano","who":"B.S. \u2726","date":"29.06.26","plays":6,"yours":true},{"id":"1xnVnK5ZHZaGEZ166eFpNJ","title":"Bending Hectic","artist":"The Smile","who":"N.F.","date":"31.01.24","plays":6,"yours":true},{"id":"1pBf1ArdfH36qNxVEbfhXQ","title":"BUACHAILL\u00cd","artist":"Le Boom","who":"B.S. \u2726","date":"16.07.26","plays":5,"yours":true},{"id":"3IFjCG1QB5a6GsSNqIAR2o","title":"Thart Agus Thart","artist":"KNEECAP","who":"B.S. \u2726","date":"29.04.25","plays":5,"yours":true},{"id":"10Y7WEFlq5IQ1G0NLcnwL4","title":"Super Mario Bros. Theme","artist":"Fart Windbreaker","who":"N.F.","date":"03.09.25","plays":4,"yours":true},{"id":"4WOUTgrrJIv8oUrjY53x2w","title":"Lockdown Christmas","artist":"Michael Fry","who":"M.B.","date":"08.12.23","plays":4,"yours":true},{"id":"7LnvjNUTRTf0Gib9Xc8v0v","title":"Legend","artist":"Teddy Triangle","who":"B.S. \u2726","date":"08.03.24","plays":3,"yours":true},{"id":"7iJnp45aNKpi8TMEU2JjXn","title":"Dead in the Water","artist":"Noel Gallagher's High Flying Birds","who":"N.F.","date":"08.09.24","plays":3,"yours":true},{"id":"2SjnvpedDUU0Ga69bxnoCa","title":"ALL THE LOVE","artist":"Kanye West","who":"N.F.","date":"07.04.26","plays":2,"yours":true},{"id":"5jZ0Q2yRYnI961sJbyWlK0","title":"Dream Job","artist":"Yard Act","who":"T.A.","date":"07.12.23","plays":2,"yours":true},{"id":"1ifVrAQPH2DZ3FBFu48rFw","title":"Better Way To Live","artist":"KNEECAP","who":"M.B.","date":"18.11.23","plays":2,"yours":true},{"id":"3cEpQH9iDYp0WZ8vQO8GFh","title":"Cruel Mother","artist":"\u00d8XN","who":"M.B.","date":"20.11.23","plays":2,"yours":true},{"id":"31ebQLtNlxtuTsyEyl1TCD","title":"On The Road - Matt Fear Remix","artist":"Lee M Kelsall","who":"M.M.","date":"25.03.26","plays":2,"yours":true},{"id":"6CrBJ6hZyIrDQo8V8VQhT1","title":"Blue Morpho","artist":"Ed O'Brien","who":"B.S. \u2726","date":"29.05.26","plays":2,"yours":true},{"id":"3rvc7RAtPI2KlfuClrpjhG","title":"Red Moon","artist":"Tom Misch","who":"N.F.","date":"01.05.26","plays":1,"yours":true},{"id":"6GEIpzW14NtOjqHejbcSRE","title":"Journal of Ardency","artist":"Class Actress","who":"M.M.","date":"04.07.24","plays":1,"yours":true},{"id":"6hWLcfeC4GSA2agkTZeter","title":"Sisters With Me","artist":"Tom Misch","who":"N.F.","date":"08.04.26","plays":1,"yours":true},{"id":"3bTDnlYinDUIC5giN64TNE","title":"To The Sandals","artist":"Dove Ellis","who":"D.C.","date":"08.11.25","plays":1,"yours":true},{"id":"7htt7UuxHL5wneOcMWJP5E","title":"Take On Me","artist":"a-ha","who":"M.M.","date":"13.09.24","plays":1,"yours":true},{"id":"2Vq9qqSlma4h5xl46436FI","title":"Daydream Repeat","artist":"Four Tet","who":"D.C.","date":"16.05.24","plays":1,"yours":true},{"id":"7vRdcsmD92oErIQDnmp60e","title":"Pa Pa Power","artist":"Dead Man's Bones","who":"N.F.","date":"17.11.23","plays":1,"yours":true},{"id":"3RFpr9aR7pBAFJ1XQnuThq","title":"Fine Art","artist":"KNEECAP","who":"M.B.","date":"19.06.24","plays":1,"yours":true},{"id":"1cTHrM3s2OLoyp0PBzVvKC","title":"Love Henry","artist":"\u00d8XN","who":"M.B.","date":"20.11.23","plays":1,"yours":true},{"id":"4STVGbDlTVthOk76jRWAnH","title":"I Wish It Was Christmas Today","artist":"Julian Casablancas","who":"B.S. \u2726","date":"21.12.23","plays":1,"yours":true},{"id":"08Ng7tlQkh5FXwCbcQEYiR","title":"Gentle Storm","artist":"Elbow","who":"M.M.","date":"22.04.25","plays":1,"yours":true},{"id":"1bH7OihYp7sdnij7zZGIoe","title":"The Wife Of Michael Cleary","artist":"\u00d8XN","who":"T.","date":"22.11.23","plays":1,"yours":true},{"id":"0BuFVacij84JZllooIeFn6","title":"Blue & Gold","artist":"Madra Salach","who":"M.M.","date":"23.01.26","plays":1,"yours":true},{"id":"5VTOa8tDe6NEjpw5HVQQTF","title":"Knife Edge","artist":"Thom Yorke","who":"N.F.","date":"24.04.24","plays":1,"yours":true},{"id":"335vJ5AwekBqjaj1XjmRnd","title":"S.N.C","artist":"DARKSIDE","who":"N.F.","date":"25.02.25","plays":1,"yours":true},{"id":"6H8z0N7iCbaYQUkb8yrI8r","title":"Enough is Never Enough","artist":"The Clockworks","who":"D.C.","date":"26.02.24","plays":1,"yours":true},{"id":"1yr9HpAu3prvxmq783ZELn","title":"\u2014","artist":"Shared link","who":"T.A.","date":"01.11.23","plays":0,"yours":false},{"id":"7aPm5kIKsCSsV0q1xIbWi8","title":"\u2014","artist":"Shared link","who":"N.F.","date":"02.05.25","plays":0,"yours":false},{"id":"1H4t36AD0JzvROeIuOnJQT","title":"\u2014","artist":"Shared link","who":"S.C.","date":"02.05.26","plays":0,"yours":false},{"id":"03dJHVsxdXM4ic7ovjXLPP","title":"\u2014","artist":"Shared link","who":"N.F.","date":"03.02.26","plays":0,"yours":false},{"id":"0dMGq0YUOik1rMZicB96Qa","title":"christmas will break your heart","artist":"LCD Soundsystem","who":"M.M.","date":"08.12.23","plays":0,"yours":false},{"id":"3Jp6IEnBlMGQiY54DqsnaL","title":"Just Like You","artist":"Ian Brown","who":"T.A.","date":"08.12.23","plays":0,"yours":false},{"id":"2d6h0X01arFt5gBE9e9tk5","title":"\u2014","artist":"Shared link","who":"T.A.","date":"09.12.23","plays":0,"yours":false},{"id":"1fYcnAQVlC21o2TopIzOe6","title":"\u2014","artist":"Shared link","who":"S.C.","date":"14.11.24","plays":0,"yours":false},{"id":"570oJcBwoLGZz95xTNa0JB","title":"\u2014","artist":"Shared link","who":"M.M.","date":"16.08.25","plays":0,"yours":false},{"id":"6wf7Yu7cxBSPrRlWeSeK0Q","title":"What Was I Made For? [From The Motion Picture \u2026","artist":"Billie Eilish","who":"M.M.","date":"18.12.23","plays":0,"yours":false},{"id":"3Ehr6qjkJQTSL1LjsWELQb","title":"BOILED PEANUTS","artist":"Doechii","who":"M.M.","date":"23.02.26","plays":0,"yours":false},{"id":"02u1kLtp8z0wx4MB9Fcm59","title":"\u2014","artist":"Shared link","who":"N.F.","date":"26.04.24","plays":0,"yours":false},{"id":"6YaiRxNzp5mZFR3orTq2Pb","title":"The Body of an American","artist":"The Pogues","who":"M.B.","date":"30.11.23","plays":0,"yours":false}],"WALLSTATS":{"total":67,"played":54,"pct":81},"PUTON":[{"plays":8,"title":"Woman","artist":"Barry Can't Swim","who":"M.M.","shared":"2023-11-02","heard":"2023-11-03"},{"plays":7,"title":"If I Was A Painter","artist":"Lisa O'Neill","who":"M.M.","shared":"2024-03-11","heard":"2024-03-12"},{"plays":1,"title":"Take On Me","artist":"a-ha","who":"M.M.","shared":"2024-09-13","heard":"2024-10-16"},{"plays":1,"title":"S.N.C","artist":"DARKSIDE","who":"N.F.","shared":"2025-02-25","heard":"2025-02-26"},{"plays":1,"title":"Red Moon","artist":"Tom Misch","who":"N.F.","shared":"2026-05-01","heard":"2026-05-08"},{"plays":1,"title":"Love Henry","artist":"\u00d8XN","who":"M.B.","shared":"2023-11-20","heard":"2023-11-21"},{"plays":1,"title":"Journal of Ardency","artist":"Class Actress","who":"M.M.","shared":"2024-07-04","heard":"2024-07-08"},{"plays":1,"title":"Gentle Storm","artist":"Elbow","who":"M.M.","shared":"2025-04-22","heard":"2026-03-05"},{"plays":1,"title":"Daydream Repeat","artist":"Four Tet","who":"D.C.","shared":"2024-05-16","heard":"2024-05-17"},{"plays":1,"title":"Blue & Gold","artist":"Madra Salach","who":"M.M.","shared":"2026-01-23","heard":"2026-04-19"},{"plays":0,"title":"The Body of an American","artist":"The Pogues","who":"M.B.","shared":"2023-11-30","heard":"2024-02-25"}]};
+const STRATA={machine:{label:"Machine Music",color:"#d4ff00"},boombap:{label:"Boom Bap",color:"#ff3600"},roots:{label:"Roots & Folk",color:"#ffb800"},groove:{label:"Groove",color:"#ff7adf"},songbook:{label:"Songbook",color:"#c7cdd4"},blue:{label:"Blue Notes",color:"#6e7bff"}};
+const TURL=id=>"https://open.spotify.com/track/"+id;
+/* ---- artwork via Spotify oEmbed (CORS-open), cached, with fallback ---- */
+const artCache={};
+function getArt(id){
+  if(id in artCache)return Promise.resolve(artCache[id]);
+  return fetch("https://open.spotify.com/oembed?url=https://open.spotify.com/track/"+id)
+    .then(r=>r.ok?r.json():null).then(j=>{const u=j&&j.thumbnail_url?j.thumbnail_url:null;artCache[id]=u;return u;})
+    .catch(()=>{artCache[id]=null;return null;});
+}
+function fillArt(imgEl,fallEl,id){
+  getArt(id).then(u=>{if(u){imgEl.src=u;imgEl.style.display='block';if(fallEl)fallEl.style.display='none';}});
+}
+/* ---- now-playing embed ---- */
+const nowcard=document.getElementById('nowcard');
+function playTrack(id,title,artist){
+  document.getElementById('np-frame').src="https://open.spotify.com/embed/track/"+id+"?utm_source=generator&theme=0";
+  document.getElementById('np-meta').textContent=artist+" — "+title;
+  nowcard.classList.add('show');
+}
+document.getElementById('np-close').onclick=()=>{nowcard.classList.remove('show');document.getElementById('np-frame').src="";};
+
+/* ================= EXPLORER ================= */
+const cv=document.getElementById('galaxy'),ctx=cv.getContext('2d');
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const activeStrata=new Set(Object.keys(STRATA));
+let W,H,DPR,nodes=[],hover=-1,t=0,mode='strata';
+const maxPlays=DATA.TOP[0].plays;
+function size(){DPR=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);layout();}
+function layout(){
+  const base=Math.min(W,H);
+  if(mode==='strata'){
+    const keys=Object.keys(STRATA),centers={};
+    const cx=W*.56,cy=H*.54,R=Math.min(W,H)*.33;
+    keys.forEach((k,i)=>{const a=(i/keys.length)*Math.PI*2-Math.PI/2;centers[k]={x:cx+Math.cos(a)*R*.98,y:cy+Math.sin(a)*R*.7};});
+    const idx={};
+    nodes=DATA.TOP.map((tr,gi)=>{
+      idx[tr.s]=(idx[tr.s]||0)+1;const n=idx[tr.s];
+      const ang=n*2.399,rad=8+n*9.5,c=centers[tr.s];
+      return {tr,gi,tx:c.x+Math.cos(ang)*rad*(base/720),ty:c.y+Math.sin(ang)*rad*(base/720),
+        x:nodes[gi]?nodes[gi].x:c.x,y:nodes[gi]?nodes[gi].y:c.y,ph:gi*1.31,size:Math.max(4,(base*.052)*(tr.plays/maxPlays))};
+    });
+  } else if(mode==='time'){
+    // x by first-heard year, y jittered; size by plays
+    const years=DATA.YEARS.map(y=>+y[0]);const ymin=Math.min(...years),ymax=Math.max(...years);
+    nodes=DATA.TOP.map((tr,gi)=>{
+      const yr=+(tr.first.slice(0,4));
+      const fx=(yr-ymin)/(ymax-ymin);
+      const col=(gi*2654435761%1000)/1000;
+      return {tr,gi,tx:W*0.1+fx*W*0.8,ty:H*0.28+col*H*0.5,
+        x:nodes[gi]?nodes[gi].x:W/2,y:nodes[gi]?nodes[gi].y:H/2,ph:gi*1.31,size:Math.max(4,(base*.052)*(tr.plays/maxPlays))};
+    });
+  } else { // rank spiral
+    const cx=W*.56,cy=H*.52;
+    nodes=DATA.TOP.map((tr,gi)=>{
+      const ang=gi*0.5,rad=14+gi*(base*0.006);
+      return {tr,gi,tx:cx+Math.cos(ang)*rad,ty:cy+Math.sin(ang)*rad,
+        x:nodes[gi]?nodes[gi].x:cx,y:nodes[gi]?nodes[gi].y:cy,ph:gi*1.31,size:Math.max(4,(base*.052)*(tr.plays/maxPlays))};
+    });
+  }
+}
+function step(){
+  t++;ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(199,205,212,.055)';ctx.lineWidth=1;
+  const gs=Math.max(60,Math.floor(W/16));
+  for(let x=0;x<W;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // year axis labels in time mode
+  if(mode==='time'){
+    ctx.fillStyle='rgba(90,97,107,.6)';ctx.font='10px "Space Mono", monospace';ctx.textAlign='center';
+    const years=DATA.YEARS.map(y=>+y[0]);const ymin=Math.min(...years),ymax=Math.max(...years);
+    for(let y=ymin;y<=ymax;y+=2){const fx=(y-ymin)/(ymax-ymin);ctx.fillText(y,W*0.1+fx*W*0.8,H-14);}
+  }
+  const drift=reduceMotion?0:1;
+  nodes.forEach(n=>{
+    n.x+=(n.tx-n.x)*0.08; n.y+=(n.ty-n.y)*0.08;
+    n.dx=n.x+(mode==='strata'?Math.sin(t*.005+n.ph)*6*drift:0);
+    n.dy=n.y+(mode==='strata'?Math.cos(t*.004+n.ph*1.3)*4*drift:0);
+  });
+  if(mode==='strata'){
+    for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i],b=nodes[j];if(a.tr.s!==b.tr.s||!activeStrata.has(a.tr.s))continue;
+      const d=Math.hypot(a.dx-b.dx,a.dy-b.dy);if(d>130)continue;
+      ctx.strokeStyle='rgba(199,205,212,.12)';ctx.beginPath();ctx.moveTo(a.dx,a.dy);ctx.lineTo(b.dx,b.dy);ctx.stroke();
+    }
+  }
+  nodes.forEach((n,i)=>{
+    const on=activeStrata.has(n.tr.s),h=i===hover&&on,col=STRATA[n.tr.s].color,s=n.size;
+    ctx.globalAlpha=on?1:.1;ctx.fillStyle=h?'#fff':col;
+    ctx.fillRect(n.dx-s,n.dy-s,s*2,s*2);
+    if(h){ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.strokeRect(n.dx-s-5,n.dy-s-5,s*2+10,s*2+10);}
+    ctx.globalAlpha=1;
+  });
+  requestAnimationFrame(step);
+}
+function pick(px,py){let best=-1,bd=1e9;nodes.forEach((n,i)=>{if(!activeStrata.has(n.tr.s))return;const d=Math.hypot(px-n.dx,py-n.dy);if(d<n.size+9&&d<bd){bd=d;best=i;}});return best;}
+const tip=document.getElementById('tooltip');
+cv.addEventListener('mousemove',e=>{
+  const r=cv.getBoundingClientRect();hover=pick(e.clientX-r.left,e.clientY-r.top);
+  if(hover>-1){const tr=nodes[hover].tr;
+    const im=document.getElementById('tt-img'),fb=document.getElementById('tt-fb');
+    im.style.display='none';fb.style.display='flex';fb.textContent=tr.artist[0];
+    fillArt(im,fb,tr.id);
+    document.getElementById('tt-rank').textContent='Nº '+String(nodes[hover].gi+1).padStart(2,'0')+' / '+STRATA[tr.s].label.toUpperCase();
+    document.getElementById('tt-title').textContent=tr.title;
+    document.getElementById('tt-artist').textContent=tr.artist;
+    document.getElementById('tt-plays').textContent=tr.plays+' PLAYS · '+tr.hours+'H · SINCE '+tr.first;
+    tip.style.display='block';tip.style.left=Math.min(e.clientX+16,innerWidth-226)+'px';tip.style.top=Math.min(e.clientY+16,innerHeight-320)+'px';cv.style.cursor='pointer';
+  }else{tip.style.display='none';cv.style.cursor=mode==='strata'?'grab':'default';}
+});
+cv.addEventListener('mouseleave',()=>{tip.style.display='none';hover=-1;});
+cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect();const i=pick(e.clientX-r.left,e.clientY-r.top);if(i>-1){const tr=nodes[i].tr;playTrack(tr.id,tr.title,tr.artist);}});
+const chipsEl=document.getElementById('chips');
+Object.entries(STRATA).forEach(([k,s])=>{const b=document.createElement('button');b.className='chip';b.innerHTML='<span class="dot" style="background:'+s.color+'"></span>'+s.label;
+  b.onclick=()=>{if(activeStrata.has(k)&&activeStrata.size===1){Object.keys(STRATA).forEach(x=>activeStrata.add(x));}else if(activeStrata.has(k))activeStrata.delete(k);else activeStrata.add(k);[...chipsEl.children].forEach((c,ci)=>c.classList.toggle('off',!activeStrata.has(Object.keys(STRATA)[ci])));};chipsEl.appendChild(b);});
+document.querySelectorAll('.mode-toggle button').forEach(btn=>{
+  btn.onclick=()=>{mode=btn.dataset.mode;document.querySelectorAll('.mode-toggle button').forEach(b=>b.classList.toggle('on',b===btn));layout();};
+});
+
+/* hero stamp + intro + statband */
+const S=DATA.STATS;
+document.getElementById('heroStamp').innerHTML='SINCE <b>'+S.first.slice(0,4)+'</b><br>HOURS <b>'+S.total_hours.toLocaleString()+'</b><br>ARTISTS <b>'+S.unique_artists.toLocaleString()+'</b><br>STATUS <b>LIVE</b>';
+document.getElementById('chartIntro').textContent="Spotify's own play counts across 14 years, 206,925 streams and 7,074 hours. So What leads at 155 plays; Aphex Twin owns "+DATA.TOP.filter(t=>t.artist==='Aphex Twin').length+" of the top 50. Tap any track to play it.";
+document.getElementById('statband').innerHTML=[
+  [S.total_hours.toLocaleString(),'Hours streamed'],[S.total_days,'Days of audio'],
+  [(S.unique_tracks/1000).toFixed(0)+'k','Unique tracks'],[(S.unique_artists/1000).toFixed(1)+'k','Unique artists'],['14','Years on record'],
+].map(([v,k])=>'<div class="sb"><div class="v">'+v+'</div><div class="k">'+k+'</div></div>').join('');
+
+/* podium + rows */
+const pod=document.getElementById('podium');
+DATA.TOP.slice(0,5).forEach((tr,i)=>{
+  const el=document.createElement('div');el.className='pod';
+  el.innerHTML='<span class="p-rank">'+(i+1)+'</span><span class="p-plays">'+tr.plays+'×</span><div class="artfall">'+tr.artist[0]+'</div><img class="art" alt="'+tr.title+'" style="display:none"><div class="p-body"><div class="p-title">'+tr.title+'</div><div class="p-artist">'+tr.artist+'</div></div>';
+  el.style.cursor='pointer';el.onclick=()=>playTrack(tr.id,tr.title,tr.artist);
+  pod.appendChild(el);fillArt(el.querySelector('.art'),el.querySelector('.artfall'),tr.id);
+});
+const rowsEl=document.getElementById('chart-rows');
+DATA.TOP.slice(5).forEach((tr,i)=>{
+  const el=document.createElement('div');el.className='row';
+  el.innerHTML='<div class="r-rank">'+(i+6)+'</div><div class="artfall">'+tr.artist[0]+'</div><img class="art" alt="" style="display:none"><div><div class="r-title">'+tr.title+'</div><div class="r-artist">'+tr.artist+'</div></div><div class="r-meta"><span class="stratum-pill" style="background:'+STRATA[tr.s].color+'" title="'+STRATA[tr.s].label+'"></span><span class="r-plays">'+tr.plays+'×</span>'+tr.hours+'h</div>';
+  el.onclick=()=>playTrack(tr.id,tr.title,tr.artist);
+  rowsEl.appendChild(el);fillArt(el.querySelector('.art'),el.querySelector('.artfall'),tr.id);
+});
+
+/* eras */
+const tlEl=document.getElementById('timeline');const maxY=Math.max(...DATA.YEARS.map(y=>y[1]));
+DATA.YEARS.forEach(([y,h])=>tlEl.insertAdjacentHTML('beforeend','<div class="yr"><div class="val">'+h+'</div><div class="b" style="height:'+(h/maxY*100)+'%"></div><div class="lab">'+y+'</div></div>'));
+const eraEl=document.getElementById('eratable');
+DATA.ERAS.forEach(([y,a,h])=>eraEl.insertAdjacentHTML('beforeend','<div class="era-row"><span class="y">'+y+'</span><span class="a">'+a+'</span><span class="h">'+h+'h</span></div>'));
+
+/* strata */
+const artEl=document.getElementById('artists');const maxAH=DATA.ARTISTS[0][1];
+DATA.ARTISTS.forEach(([a,h,p])=>artEl.insertAdjacentHTML('beforeend','<div class="bar-row" style="grid-template-columns:8.5rem 1fr 2.6rem"><span style="color:var(--chrome);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+a+'</span><div class="bar" style="width:'+(h/maxAH*100)+'%;background:'+(a==='Aphex Twin'?'var(--blood)':'var(--acid)')+'"></div><span>'+h+'h</span></div>'));
+const clockEl=document.getElementById('clock');const maxC=Math.max(...DATA.CLOCK);
+DATA.CLOCK.forEach((h,i)=>clockEl.insertAdjacentHTML('beforeend','<div class="'+(h===maxC?'peak':'')+'" style="height:'+(h/maxC*100)+'%" title="'+i+':00 · '+h+'h"></div>'));
+
+/* rhythms: weekday + discovery + marathon */
+const wdEl=document.getElementById('weekday');const wdNames=['MON','TUE','WED','THU','FRI','SAT','SUN'];const maxW=Math.max(...DATA.WEEKDAY);
+DATA.WEEKDAY.forEach((h,i)=>wdEl.insertAdjacentHTML('beforeend','<div class="bar-row" style="grid-template-columns:2.6rem 1fr 2.6rem"><span>'+wdNames[i]+'</span><div class="bar" style="width:'+(h/maxW*100)+'%;background:'+(i>=5?'var(--dim)':'var(--acid)')+'"></div><span>'+h+'h</span></div>'));
+const discEl=document.getElementById('discovery');const maxD=Math.max(...DATA.DISCOVERY.map(x=>x[1]));
+DATA.DISCOVERY.forEach(([y,c])=>discEl.insertAdjacentHTML('beforeend','<div class="bar-row" style="grid-template-columns:2.6rem 1fr 3rem"><span>'+y+'</span><div class="bar" style="width:'+(c/maxD*100)+'%"></div><span>'+c+'</span></div>'));
+const marEl=document.getElementById('marathon');
+DATA.MARATHON.forEach(([d,h])=>marEl.insertAdjacentHTML('beforeend','<div class="marathon"><span class="d">'+d+'</span><span class="h">'+h+'h</span></div>'));
+
+/* strips */
+const stripTxt=(txt)=>Array(8).fill('<span>'+txt+' <i>✦</i></span>').join('');
+document.getElementById('strip1').innerHTML=stripTxt("THE LISTENING FIELD · 7,074 HOURS · 206,925 STREAMS · SINCE 2012");
+document.getElementById('strip2').innerHTML=stripTxt("I'M LIKE, SO CULTURAL · EST. 2015 · TWELVE CORRESPONDENTS");
+
+/* ILSC */
+const MONTHLY=[6,119,145,108,36,65,60,53,44,63,249,111,64,116,77,31,24,59,120,60,57,36,37,32,67,51,57,18,31,56,18,67,37,3];
+const MEMBERS=[["B.S. ✦",481],["M.M.",354],["N.F.",350],["T.A.",200],["M.B.",174],["S.C.",174],["D.C.",168],["T.",86],["S.M.",81],["J.O'R.",62],["D.L.",45],["J.",2]];
+const TX=[["New song from a band called The Beatles","B.S. ✦","02.11.23"],["Check your watch, it's taxi time","T.A.","11.11.23"],["Bang bang banger","M.M.","02.11.23"],["Where are my friends tonight?!","M.M.","01.12.23"],["Legit thought it was Michael Fry","B.S. ✦","26.10.23"],["Mad that all our names are in that. What a belter.","M.M.","21.12.23"],["Big soda burying the WHO advice on aspartame. A topic for 'I'm like, so conspiratorial'","T.A.","06.01.24"],["Oh is this a joke song too? That makes more sense","N.F.","27.11.24"],["Shazza Osbourne really going for it","M.M.","29.04.25"],["Sounds like Thom Yorke a little","S.C.","08.11.25"],["Feels like Nathan For You levels of absurdness towards the end","N.F.","16.05.24"],["10/10 see ya later boyos","M.B.","14.10.23"]];
+const tl2=document.getElementById('tl');const maxM=Math.max(...MONTHLY);
+MONTHLY.forEach(v=>{const dv=document.createElement('div');dv.style.height=(v/maxM*100)+'%';dv.title=v+' messages';if(v===maxM)dv.className='hot';tl2.appendChild(dv);});
+const memEl=document.getElementById('members');const maxMem=MEMBERS[0][1];
+MEMBERS.forEach(([n,c])=>memEl.insertAdjacentHTML('beforeend','<div class="bar-row" style="grid-template-columns:3.6rem 1fr 2.4rem"><span style="color:var(--chrome)">'+n+'</span><div class="bar" style="width:'+(c/maxMem*100)+'%;background:'+(n.indexOf("B.S.")===0?"var(--blood)":"var(--acid)")+'"></div><span>'+c+'</span></div>'));
+const txEl=document.getElementById('txgrid');
+TX.forEach(([q,w,dd])=>txEl.insertAdjacentHTML('beforeend','<div class="tx"><div class="q">\u201c'+q+'\u201d</div><div class="who">'+w+' <span class="d">\u00b7 '+dd+'</span></div></div>'));
+
+
+/* ================= CONSTELLATION (force graph) ================= */
+(function(){
+  const G=DATA.GRAPH;if(!G)return;
+  const cvc=document.getElementById('cgraph'),cx=cvc.getContext('2d');
+  let CW,CH,CDPR;
+  const N=G.nodes.map(n=>({...n,x:0,y:0,vx:0,vy:0}));
+  const maxH=Math.max(...N.map(n=>n.h));
+  const maxE=Math.max(...G.edges.map(e=>e[2]));
+  let chover=-1,cdrag=-1,mx=0,my=0,down=false;
+  function csize(){CDPR=Math.min(devicePixelRatio||1,2);CW=cvc.clientWidth;CH=cvc.clientHeight;cvc.width=CW*CDPR;cvc.height=CH*CDPR;cx.setTransform(CDPR,0,0,CDPR,0,0);
+    N.forEach((n,i)=>{if(n.x===0){const a=i/N.length*Math.PI*2;n.x=CW/2+Math.cos(a)*CW*0.28;n.y=CH/2+Math.sin(a)*CH*0.28;}});}
+  function radius(n){return 6+Math.sqrt(n.h/maxH)*26;}
+  function tick(){
+    // repulsion
+    for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){
+      let dx=N[j].x-N[i].x,dy=N[j].y-N[i].y,d=Math.hypot(dx,dy)||1;
+      const rep=2600/(d*d);const fx=dx/d*rep,fy=dy/d*rep;
+      N[i].vx-=fx;N[i].vy-=fy;N[j].vx+=fx;N[j].vy+=fy;
+    }
+    // springs
+    G.edges.forEach(([a,b,w])=>{
+      let dx=N[b].x-N[a].x,dy=N[b].y-N[a].y,d=Math.hypot(dx,dy)||1;
+      const target=90+ (1-w/maxE)*120; const k=(d-target)*0.005;
+      const fx=dx/d*k,fy=dy/d*k;
+      N[a].vx+=fx;N[a].vy+=fy;N[b].vx-=fx;N[b].vy-=fy;
+    });
+    // center gravity
+    N.forEach(n=>{n.vx+=(CW/2-n.x)*0.002;n.vy+=(CH/2-n.y)*0.002;n.vx*=0.86;n.vy*=0.86;
+      if(!(down&&cdrag>-1&&N[cdrag]===n)){n.x+=n.vx;n.y+=n.vy;}
+      n.x=Math.max(radius(n),Math.min(CW-radius(n),n.x));n.y=Math.max(radius(n),Math.min(CH-radius(n),n.y));});
+  }
+  function draw(){
+    tick();cx.clearRect(0,0,CW,CH);
+    // edges
+    G.edges.forEach(([a,b,w])=>{
+      const on=chover===-1||chover===a||chover===b;
+      cx.strokeStyle=on?(chover>-1?'rgba(212,255,0,.35)':'rgba(199,205,212,'+(0.05+w/maxE*0.22)+')'):'rgba(199,205,212,.03)';
+      cx.lineWidth=on&&chover>-1?1.4:(0.5+w/maxE*2.2);
+      cx.beginPath();cx.moveTo(N[a].x,N[a].y);cx.lineTo(N[b].x,N[b].y);cx.stroke();
+    });
+    // nodes
+    N.forEach((n,i)=>{
+      const on=chover===-1||i===chover||G.edges.some(e=>(e[0]===chover&&e[1]===i)||(e[1]===chover&&e[0]===i));
+      const col=STRATA[n.s]?STRATA[n.s].color:'#c7cdd4';const r=radius(n);
+      cx.globalAlpha=on?1:.15;
+      cx.fillStyle=i===chover?'#fff':col;cx.beginPath();cx.arc(n.x,n.y,r,0,Math.PI*2);cx.fill();
+      if(i===chover){cx.strokeStyle=col;cx.lineWidth=2;cx.beginPath();cx.arc(n.x,n.y,r+4,0,Math.PI*2);cx.stroke();}
+      // label for big nodes or hovered
+      if(r>15||i===chover){cx.globalAlpha=on?1:.2;cx.fillStyle=on?'#fff':'var(--dim)';cx.font=(i===chover?'700 ':'400 ')+'10px "Space Mono", monospace';cx.textAlign='center';cx.fillText(n.name.toUpperCase(),n.x,n.y-r-6);}
+      cx.globalAlpha=1;
+    });
+    requestAnimationFrame(draw);
+  }
+  function pickC(px,py){let b=-1,bd=1e9;N.forEach((n,i)=>{const d=Math.hypot(px-n.x,py-n.y);if(d<radius(n)+4&&d<bd){bd=d;b=i;}});return b;}
+  const ci=document.getElementById('cinfo');
+  cvc.addEventListener('mousemove',e=>{const r=cvc.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;
+    if(down&&cdrag>-1){N[cdrag].x=mx;N[cdrag].y=my;N[cdrag].vx=0;N[cdrag].vy=0;return;}
+    chover=pickC(mx,my);
+    if(chover>-1){const n=N[chover];document.getElementById('ci-name').textContent=n.name;
+      document.getElementById('ci-meta').textContent=n.h+'H · '+n.p+' PLAYS · '+(STRATA[n.s]?STRATA[n.s].label:'');
+      const nb=G.edges.filter(e=>e[0]===chover||e[1]===chover).sort((a,b)=>b[2]-a[2]).slice(0,3)
+        .map(e=>{const o=e[0]===chover?e[1]:e[0];return '<b>'+N[o].name+'</b> ('+e[2]+')';});
+      document.getElementById('ci-links').innerHTML='PAIRS WITH: '+(nb.join(' · ')||'—');
+      ci.classList.add('show');cvc.style.cursor='pointer';
+    }else{ci.classList.remove('show');cvc.style.cursor=down?'grabbing':'grab';}
+  });
+  cvc.addEventListener('mousedown',e=>{const r=cvc.getBoundingClientRect();down=true;cdrag=pickC(e.clientX-r.left,e.clientY-r.top);});
+  addEventListener('mouseup',()=>{down=false;cdrag=-1;});
+  cvc.addEventListener('mouseleave',()=>{if(!down){chover=-1;ci.classList.remove('show');}});
+  addEventListener('resize',csize);csize();requestAnimationFrame(draw);
+})();
+
+/* ================= TIME MACHINE + GATEWAY ================= */
+(function(){
+  const YT=DATA.YEARTOP;if(!YT)return;
+  const yearsEl=document.getElementById('tmYears');
+  function render(i){
+    const [y,track,artist,plays,id]=YT[i];
+    document.getElementById('tmTrack').textContent=track;
+    document.getElementById('tmArtist').textContent=artist+' · '+plays+' plays in '+y;
+    const art=document.getElementById('tmArt');art.innerHTML=artist[0];
+    getArt(id).then(u=>{if(u)art.innerHTML='<img src="'+u+'" alt="">';});
+    document.getElementById('tmPlay').onclick=()=>playTrack(id,track,artist);
+    [...yearsEl.children].forEach((b,bi)=>b.classList.toggle('on',bi===i));
+  }
+  YT.forEach(([y],i)=>{const b=document.createElement('button');b.textContent=y;b.onclick=()=>render(i);yearsEl.appendChild(b);});
+  render(YT.length-1);
+  const gate=document.getElementById('gate');
+  DATA.GATE.forEach(([a,d,tk,id])=>{
+    const el=document.createElement('div');el.className='gate-row';el.style.cursor='pointer';
+    el.innerHTML='<span class="g-d">'+d+'</span><span class="g-a">'+a+'</span><span class="g-t">via \u201c'+tk+'\u201d</span>';
+    el.onclick=()=>playTrack(id,tk,a);gate.appendChild(el);
+  });
+})();
+
+
+/* ================= SHARED WALL ================= */
+(function(){
+  const WALL=DATA.WALL;if(!WALL)return;
+  document.getElementById('wallStats').innerHTML=[
+    [DATA.WALLSTATS.total,'Tracks shared'],
+    [DATA.WALLSTATS.played,'I also played'],
+    [DATA.WALLSTATS.pct+'%','Hit rate'],
+    [DATA.PUTON.length,'Genuine put-ons'],
+  ].map(([v,k])=>'<div class="ws"><div class="v">'+v+'</div><div class="k">'+k+'</div></div>').join('');
+  const grid=document.getElementById('wallGrid');
+  const putonIds=new Set(DATA.PUTON.map(p=>p.title+p.artist));
+  function card(w){
+    const el=document.createElement('div');el.className='wc';el.dataset.yours=w.yours?'1':'0';
+    el.dataset.puton=DATA.PUTON.some(p=>p.artist===w.artist&&w.title.startsWith(p.title.slice(0,10)))?'1':'0';
+    const pc=w.plays>0?'<span class="wc-plays">'+w.plays+'×</span>':'<span class="wc-plays zero">0×</span>';
+    el.innerHTML=pc+'<div class="wc-art">'+(w.artist!=='Shared link'?w.artist[0]:'♪')+'<div class="wc-play">▶</div></div><div class="wc-body"><div class="wc-title">'+w.title+'</div><div class="wc-artist">'+w.artist+'</div><div class="wc-who">'+w.who+' · '+w.date+'</div></div>';
+    el.onclick=()=>playTrack(w.id,w.title,w.artist);
+    const art=el.querySelector('.wc-art');
+    getArt(w.id).then(u=>{if(u)art.innerHTML='<img src="'+u+'" alt=""><div class="wc-play">▶</div>';});
+    return el;
+  }
+  function render(f){
+    grid.innerHTML='';
+    WALL.filter(w=>f==='all'||(f==='yours'&&w.yours)||(f==='puton'&&DATA.PUTON.some(p=>p.artist===w.artist&&w.title.startsWith(p.title.slice(0,8)))))
+        .forEach(w=>grid.appendChild(card(w)));
+  }
+  render('all');
+  document.querySelectorAll('#wallFilter button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('#wallFilter button').forEach(x=>x.classList.toggle('on',x===b));render(b.dataset.f);});
+  const pl=document.getElementById('putonList');
+  DATA.PUTON.forEach(p=>{
+    const el=document.createElement('div');el.className='puton-row';
+    el.innerHTML='<span class="p-t">'+p.title+' <small>· '+p.artist+'</small></span><span class="p-who">'+p.who+'</span><span class="p-n">shared '+p.shared+' → heard '+p.heard+'</span>';
+    // find id from WALL
+    const match=WALL.find(w=>w.artist===p.artist&&w.title.startsWith(p.title.slice(0,8)));
+    if(match)el.onclick=()=>playTrack(match.id,match.title,match.artist);
+    pl.appendChild(el);
+  });
+})();
+
+addEventListener('resize',size);size();requestAnimationFrame(step);
+</script>
+</body>
+</html>
